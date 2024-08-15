@@ -19,9 +19,7 @@ export default function Home() {
       {/* ContainerScroll Section */}
       <HeroSection />
       {/* LampComponent Section */}
-      <section className="relative mt-10">
         <LampComponent />
-      </section>
       <PricingSection />
 
     </main>

@@ -6,6 +6,7 @@ import { DM_Sans } from "next/font/google";
 import  Sidebar  from "@/components/global/sidebar";
 import Navbar from "@/components/global/navbar";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import Topbar from "@/components/global/topbar";
 
 
 // const inter = DM_Sans({ subsets: ["latin"] });
@@ -22,7 +23,8 @@ export default function DashboardLayout({
 }>) {
   return (
     <div>
-       <div className=" w-full h-[200vh] flex">
+      <Topbar heading="Dashboard" />
+       <div className=" w-full flex">
           <Sidebar />
         <div className="">
           <ScrollArea className="">{children}</ScrollArea>
