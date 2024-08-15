@@ -29,7 +29,7 @@ function Sidebar() {
     <div className="h-screen w-fit sm:w-1/3 md:w-1/4 lg:w-1/5 border-r">
       {/* <ScrollArea> */}
         <div className="space-y-1 px-4">
-          <ul className="flex flex-col space-y-2 font-roobert">
+          <ul className="flex flex-col space-y-2 font-roobert mt-6">
             {menuItems.map((item) => (
               <li key={item.href}>
                 <Link
