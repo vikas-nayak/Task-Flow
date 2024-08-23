@@ -9,8 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@clerk/nextjs": "^5.2.14",
+    "@clerk/elements": "^0.14.0",
+    "@clerk/nextjs": "^5.3.3",
     "@prisma/client": "^5.18.0",
+    "@radix-ui/react-label": "^2.1.0",
     "@radix-ui/react-scroll-area": "^1.1.0",
     "@radix-ui/react-slot": "^1.1.0",
     "@tsparticles/engine": "^3.5.0",

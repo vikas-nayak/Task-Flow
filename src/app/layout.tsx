@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/providers/theme.provider";
 import { DM_Sans } from "next/font/google";
+import { ClerkProvider } from "@clerk/nextjs";
 
 
 const inter = DM_Sans({ subsets: ["latin"] });
@@ -18,6 +19,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
+    <ClerkProvider>
     <html lang="en">
       <body className={inter.className}>
       <ThemeProvider
@@ -30,5 +32,6 @@ export default function RootLayout({
         </ThemeProvider>
         </body>
     </html>
+    </ClerkProvider>
   );
 }
