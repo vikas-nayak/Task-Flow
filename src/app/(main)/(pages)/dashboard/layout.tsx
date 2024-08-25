@@ -29,7 +29,7 @@ export default function DashboardLayout({
           <Sidebar />
         </div>
         <div className="w-full col-span-5">
-          <ScrollArea className="">{children}</ScrollArea>
+          <ScrollArea className="h-full w-full">{children}</ScrollArea>
         </div>
       </div>
     </div>
