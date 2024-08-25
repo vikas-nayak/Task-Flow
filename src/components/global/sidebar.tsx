@@ -32,7 +32,7 @@ function Sidebar() {
   ];
 
   return (
-    <div className="h-screen w-fit sm:w-1/3 md:w-1/4 lg:w-1/5 border-r">
+    <div className="h-screen  border-r">
       <div className="space-y-1 px-4">
         <ul className="flex flex-col space-y-2 font-roobert mt-6">
           {menuItems.map((item) => (
@@ -41,12 +41,12 @@ function Sidebar() {
                 href={item.href}
                 className={`flex gap-2 rounded-lg px-4 py-2 text-sm
                   ${pathname === item.href
-                    ? `bg-primary font-bold ${isDarkMode ? "text-white" : "text-black"}`
+                    ? `bg-primary font-bold ${isDarkMode ? "text-black" : "text-white"}`
                     : `text-gray-500 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-500 hover:text-gray-700`}
                 `}
               >
                 <item.icon
-                  className={`w-5 h-5 ${pathname === item.href ? (isDarkMode ? "text-white" : "text-black") : ""}`}
+                  className={`w-5 h-5 ${pathname === item.href ? (isDarkMode ? "text-black" : "text-white") : ""}`}
                 />
                 <span>{item.label}</span>
               </Link>

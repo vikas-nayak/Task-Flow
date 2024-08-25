@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 // import "./globals.css";
 // import { ThemeProvider } from "@/providers/theme.provider";
 import { DM_Sans } from "next/font/google";
-import  Sidebar  from "@/components/global/sidebar";
+import Sidebar from "@/components/global/sidebar";
 import Navbar from "@/components/global/navbar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Topbar from "@/components/global/topbar";
@@ -24,12 +24,14 @@ export default function DashboardLayout({
   return (
     <div>
       <Topbar heading="Dashboard" />
-       <div className=" w-full flex">
+      <div className="w-full grid grid-cols-6">
+        <div className="col-span-1">
           <Sidebar />
-        <div className="">
+        </div>
+        <div className="w-full col-span-5">
           <ScrollArea className="">{children}</ScrollArea>
         </div>
-       </div>
+      </div>
     </div>
   );
 }
