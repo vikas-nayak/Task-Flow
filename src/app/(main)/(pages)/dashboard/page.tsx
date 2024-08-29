@@ -3,7 +3,9 @@ import React from 'react'
 const DashboardPage = () => {
   return (
     <div>
-      <h1>Home Page</h1>
+      <div className='flex justify-between pt-5'>
+        <h1 className='text-3xl pl-6'>Welcome Back, User!</h1>
+      </div>
     </div>
   )
 }
