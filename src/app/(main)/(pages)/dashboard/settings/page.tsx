@@ -1,8 +1,12 @@
+import SettingsPage from '@/components/sections/settings-page'
+import { Settings } from 'lucide-react'
 import React from 'react'
 
 function page() {
   return (
-    <div>settings</div>
+    <div>
+      <SettingsPage />
+    </div>
   )
 }
 
