@@ -1,7 +1,7 @@
-import React from 'react'
-import { Tabs, TabsList, TabsTrigger } from '../ui/tabs'
-import { Separator } from '../ui/separator'
-import DragCard from './drag-card'
+import React from 'react';
+import { Tabs, TabsList, TabsTrigger } from '../ui/tabs';
+import { Separator } from '../ui/separator';
+// import DragCard from './drag-card';
 
 function EditorCanvasSidebar() {
   return (
@@ -17,7 +17,7 @@ function EditorCanvasSidebar() {
         <Separator/>
         {/* <DragCard/> */}
     </div>
-  )
+  );
 }
 
-export default EditorCanvasSidebar
+export default EditorCanvasSidebar;

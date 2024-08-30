@@ -9,21 +9,25 @@ import {
     applyNodeChanges,
     applyEdgeChanges,
     addEdge,
+    NodeChange,
+    EdgeChange,
+    Connection,
+    Node,
+    Edge,
 } from '@xyflow/react';
 import CustomNode from './custom-node';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '../ui/resizable';
 import EditorCanvasSidebar from './editor-canvas-sidebar';
 import DragCard from './editor-canvas-card';
 
-
 const nodeTypes = { customNode: CustomNode };
 
-const initialNodes : any= [];
+const initialNodes: Node[] = [];
 
-const initialEdges :any = [];
+const initialEdges: Edge[] = [];
 
 function EditorCanvas() {
-    const handleDragStart = (event, card) => {
+    const handleDragStart = (event: React.DragEvent, card: any) => {
         event.dataTransfer.setData('application/reactflow', JSON.stringify(card));
     };
 
@@ -43,31 +47,29 @@ function EditorCanvas() {
     );
 }
 
-
-
 function Flow() {
-    const [nodes, setNodes] = useState(initialNodes);
-    const [edges, setEdges] = useState(initialEdges);
+    const [nodes, setNodes] = useState<Node[]>(initialNodes);
+    const [edges, setEdges] = useState<Edge[]>(initialEdges);
 
     const onNodesChange = useCallback(
-        (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
+        (changes: NodeChange[]) => setNodes((nds) => applyNodeChanges(changes, nds)),
         []
     );
     const onEdgesChange = useCallback(
-        (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
+        (changes: EdgeChange[]) => setEdges((eds) => applyEdgeChanges(changes, eds)),
         []
     );
 
     const onConnect = useCallback(
-        (params) => setEdges((eds) => addEdge(params, eds)),
+        (params: Connection) => setEdges((eds) => addEdge(params, eds)),
         []
     );
 
     const onDrop = useCallback(
-        (event) => {
+        (event: React.DragEvent) => {
             event.preventDefault();
             const data = JSON.parse(event.dataTransfer.getData('application/reactflow'));
-            const newNode = {
+            const newNode: Node = {
                 id: `${Math.random()}`,
                 type: 'customNode',
                 position: { x: event.clientX, y: event.clientY },
@@ -78,7 +80,7 @@ function Flow() {
         []
     );
 
-    const onDragOver = useCallback((event) => {
+    const onDragOver = useCallback((event: React.DragEvent) => {
         event.preventDefault();
     }, []);
 
@@ -101,8 +103,5 @@ function Flow() {
         </div>
     );
 }
-
-
-
 
 export default EditorCanvas;

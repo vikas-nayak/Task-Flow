@@ -2,7 +2,15 @@ import React from 'react';
 import { Handle, Position } from '@xyflow/react';
 import { HardDrive, BotMessageSquare, Database, Slack, BrainCircuit } from 'lucide-react';
 
-const iconMapping = {
+interface IconMapping {
+    HardDrive: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+    BotMessageSquare: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+    Database: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+    Slack: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+    BrainCircuit: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+}
+
+const iconMapping: IconMapping = {
     HardDrive: HardDrive,
     BotMessageSquare: BotMessageSquare,
     Database: Database,
@@ -10,7 +18,17 @@ const iconMapping = {
     BrainCircuit: BrainCircuit,
 };
 
-const CustomNode = ({ data }: any) => {
+interface CustomNodeData {
+    icon: keyof IconMapping; // Ensure that icon matches one of the keys in iconMapping
+    name: string;
+    description: string;
+}
+
+interface CustomNodeProps {
+    data: CustomNodeData;
+}
+
+const CustomNode: React.FC<CustomNodeProps> = ({ data }) => {
     const IconComponent = iconMapping[data.icon]; // Map string to actual component
 
     return (
