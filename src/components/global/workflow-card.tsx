@@ -12,12 +12,15 @@ import Link from "next/link"
 
 const WorkflowCard = () => {
     return (
-        <Link href="http://localhost:3000/dashboard/workflows/1">
+
+        <div>
         <Card className='relative m-4'>
+        <Link href="https://localhost:3000/dashboard/workflows/1">
             <CardHeader>
                 <CardTitle>Automation Task 1</CardTitle>
                 <CardDescription>This will be the description of the task</CardDescription>
             </CardHeader>
+        </Link>
             <CardContent className='flex justify-start space-x-4'>
                 <img src="/googleDrive.png" alt="Logo 1" className='w-8 h-8' />
                 <img src="/notion.png" alt="Logo 2" className='w-8 h-8' />
@@ -28,7 +31,7 @@ const WorkflowCard = () => {
                 <Switch id="airplane-mode" />
             </div>
         </Card>
-        </Link>
+        </div>
     )
 }
 

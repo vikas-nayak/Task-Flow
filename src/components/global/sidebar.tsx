@@ -34,7 +34,7 @@ function Sidebar() {
   return (
     <div className="h-screen  border-r">
       <div className="space-y-1 px-4">
-        <ul className="flex flex-col space-y-2 font-roobert mt-6">
+        <ul className="flex flex-col space-y-2 font-roobert pt-6">
           {menuItems.map((item) => (
             <li key={item.href}>
               <Link
