@@ -1,12 +1,14 @@
 import React from 'react';
 import { Handle, Position } from '@xyflow/react';
-import { HardDrive, BotMessageSquare, Database, Slack, BrainCircuit } from 'lucide-react';
+import { HardDrive, BotMessageSquare, Database, Slack, BrainCircuit, Instagram, Linkedin } from 'lucide-react';
 
 interface IconMapping {
     HardDrive: React.ComponentType<React.SVGProps<SVGSVGElement>>;
     BotMessageSquare: React.ComponentType<React.SVGProps<SVGSVGElement>>;
     Database: React.ComponentType<React.SVGProps<SVGSVGElement>>;
     Slack: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+    Instagram: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+    Linkedin: React.ComponentType<React.SVGProps<SVGSVGElement>>;
     BrainCircuit: React.ComponentType<React.SVGProps<SVGSVGElement>>;
 }
 
@@ -16,6 +18,8 @@ const iconMapping: IconMapping = {
     Database: Database,
     Slack: Slack,
     BrainCircuit: BrainCircuit,
+    Instagram: Instagram,
+    Linkedin: Linkedin,
 };
 
 interface CustomNodeData {

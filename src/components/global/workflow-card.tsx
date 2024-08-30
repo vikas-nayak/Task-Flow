@@ -8,9 +8,11 @@ import {
 } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
+import Link from "next/link"
 
 const WorkflowCard = () => {
     return (
+        <Link href="http://localhost:3000/dashboard/workflows/1">
         <Card className='relative m-4'>
             <CardHeader>
                 <CardTitle>Automation Task 1</CardTitle>
@@ -26,6 +28,7 @@ const WorkflowCard = () => {
                 <Switch id="airplane-mode" />
             </div>
         </Card>
+        </Link>
     )
 }
 
