@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, CardDescription, CardHeader } from '../ui/card';
 import { HardDrive, BotMessageSquare, Database, Slack, BrainCircuit, Instagram, Linkedin } from 'lucide-react';
+import { useTheme } from 'next-themes';
 
 interface CardData {
     name: string;
@@ -42,7 +43,9 @@ function DragCard({ onDragStart }: DragCardProps) {
         }
     };
 
+    const { theme } = useTheme();
     return (
+
         <div className="p-3 space-y-4">
             {cardDataArray.map((cardData, index) => {
                 const IconComponent = iconMapping[cardData.icon]; // Ensure icon is a React component
@@ -58,8 +61,10 @@ function DragCard({ onDragStart }: DragCardProps) {
                             {IconComponent && <IconComponent className="w-6 h-6 mr-2" />} {/* Render the icon */}
                         </div>
                         <div className="flex-1">
-                            <CardHeader className="text-md font-semibold text-white p-0 ml-3">
-                                {cardData.name}
+                            <CardHeader
+                                className={`text-md font-semibold p-0 ml-3 ${theme === 'light' ? 'text-black' : 'text-white'
+                                    }`}
+                            >{cardData.name}
                             </CardHeader>
                             <CardDescription className="text-gray-500 text-sm ml-3">
                                 {cardData.description}

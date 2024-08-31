@@ -5,18 +5,21 @@ import { Button } from '../ui/button';
 import { HardDrive, BotMessageSquare, Database, Slack, BrainCircuit, Instagram, Linkedin } from 'lucide-react';
 import { ScrollArea } from '../ui/scroll-area';
 import { useState } from 'react';
+import { useTheme } from 'next-themes';
+
+
 
 // Define the type for card data
 type CardData = {
     name: string;
     description: string;
     icon: React.ReactNode;
-}
-
-// Map icon names to components
-const iconMap: Record<string, React.ReactNode> = {
-    HardDrive: <HardDrive className='w-8 h-8' />,
-    BotMessageSquare: <BotMessageSquare className='w-8 h-8' />,
+    }
+    
+    // Map icon names to components
+    const iconMap: Record<string, React.ReactNode> = {
+        HardDrive: <HardDrive className='w-8 h-8' />,
+        BotMessageSquare: <BotMessageSquare className='w-8 h-8' />,
     Database: <Database className='w-8 h-8' />,
     Slack: <Slack className='w-8 h-8' />,
     BrainCircuit: <BrainCircuit className='w-8 h-8' />,
@@ -35,16 +38,17 @@ const cardDataArray: CardData[] = [
 ];
 
 function ConnectionCard() {
-        // State to manage button text and style
-        const [connected, setConnected] = useState<Record<number, boolean>>({});
+    // State to manage button text and style
+    const [connected, setConnected] = useState<Record<number, boolean>>({});
+    const { theme } = useTheme();
 
-        // Toggle button state
-        const handleButtonClick = (index: number) => {
-            setConnected((prevState) => ({
-                ...prevState,
-                [index]: !prevState[index]
-            }));
-        };
+    // Toggle button state
+    const handleButtonClick = (index: number) => {
+        setConnected((prevState) => ({
+            ...prevState,
+            [index]: !prevState[index]
+        }));
+    };
     return (
         <div className='h-screen'>
             <ScrollArea className='h-full p-4'>
@@ -64,7 +68,13 @@ function ConnectionCard() {
                                         <CardDescription>{cardData.description}</CardDescription>
                                     </CardHeader>
                                     <Button
-                                        className={`mr-4 ${connected[index] ? 'bg-transparent text-white border-solid border-white border-[1px] hover:bg-black' : 'variant: outline'}`}
+                                        className={`mr-4 ${connected[index]
+                                                ? `bg-transparent ${theme === 'light'
+                                                    ? 'text-black border-black hover:bg-gray-200'
+                                                    : 'text-white border-white hover:bg-black'
+                                                } border-solid border-[1px]`
+                                                : 'variant: outline'
+                                            }`}
                                         onClick={() => handleButtonClick(index)}
                                     >
                                         {connected[index] ? 'Connected' : 'Connect'}
