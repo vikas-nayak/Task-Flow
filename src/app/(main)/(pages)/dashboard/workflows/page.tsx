@@ -17,6 +17,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import WorkflowCard from '@/components/global/workflow-card';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 function Page() {
   const { user } = useUser(); // Get the current user from Clerk
@@ -54,10 +55,11 @@ function Page() {
   };
 
   return (
-    <div className='w-full min-h-screen p-5'>
+    <div className='w-full h-screen p-5'>
+      <ScrollArea className='h-full scrollbar-hidden'>
       <div className='flex justify-between w-full items-center mb-5'>
         <h1 className='text-2xl'>Workflows</h1>
-        <Drawer>
+        <Drawer >
           <DrawerTrigger asChild>
             <Button className='flex items-center'>
               <Plus className='h-4 w-4' />
@@ -91,19 +93,20 @@ function Page() {
               </div>
               <div className='flex justify-center space-x-2'>
                 <DrawerClose asChild>
-                  <Button variant='outline'>Cancel</Button>
+                  <Button type='submit' onClick={handleSubmit}>
+                    Submit
+                  </Button>
                 </DrawerClose>
-                <Button type='submit' onClick={handleSubmit}>
-                  Submit
-                </Button>
+
               </div>
             </DrawerFooter>
           </DrawerContent>
         </Drawer>
       </div>
       <div>
-        {/* Render WorkflowCards here */}
+        <WorkflowCard />
       </div>
+      </ScrollArea>
     </div>
   );
 }
