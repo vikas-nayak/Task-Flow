@@ -1,6 +1,8 @@
+import { checkUser } from '@/lib/checkUser'
 import React from 'react'
 
 const DashboardPage = () => {
+  const user = checkUser()
   return (
     <div>
       <div className='flex justify-between pt-5'>

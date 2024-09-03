@@ -11,11 +11,11 @@ datasource db {
 }
 
 model User {
-  id Int @id @default(autoincrement())
+  id  String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
 
   clerkId      String  @unique
   name         String?
-  email        String  @unique
+  email        String?
   profileImage String?
   tier         String? @default("Free")
   credits      String? @default("10")
@@ -25,7 +25,7 @@ model User {
   localGoogleId    String?  @unique
   googleResourceId String?  @unique
 
-  LocalGoogleCredential LocalGoogleCredential?
+  // LocalGoogleCredential LocalGoogleCredential?
   DiscordWebhook        DiscordWebhook[]
   Notion                Notion[]
   Slack                 Slack[]
@@ -46,7 +46,7 @@ model LocalGoogleCredential {
   updatedAt DateTime @updatedAt
 
   userId Int  @unique
-  user   User @relation(fields: [userId], references: [id])
+  // user   User @relation(fields: [userId], references: [id])
 }
 
 model DiscordWebhook {
