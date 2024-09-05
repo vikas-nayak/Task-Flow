@@ -37,8 +37,10 @@ interface CustomNodeProps {
 const CustomNode: React.FC<CustomNodeProps> = ({ data, id }) => {
     const IconComponent = iconMapping[data.icon];
 
+    console.log('CustomNode data:', data); // Add this line for debugging
+
     return (
-        <div className="p-4 border rounded-lg bg-white shadow-md relative" id={id}> {/* Add id to div */}
+        <div className="p-4 border rounded-lg bg-white shadow-md relative" id={id}>
             <Handle
                 type="target"
                 position={Position.Top}
@@ -50,7 +52,7 @@ const CustomNode: React.FC<CustomNodeProps> = ({ data, id }) => {
                 <div>
                     <p className="font-semibold text-gray-900 pl-4">{data.name}</p>
                     <p className="text-sm text-gray-500 pl-4">{data.description}</p>
-                    <p className="text-xs text-gray-400 pl-4">ID: {id}</p> {/* Display ID */}
+                    <p className="text-xs text-gray-400 pl-4">ID: {id}</p>
                 </div>
             </div>
             <Handle
@@ -62,5 +64,6 @@ const CustomNode: React.FC<CustomNodeProps> = ({ data, id }) => {
         </div>
     );
 };
+
 
 export default CustomNode;

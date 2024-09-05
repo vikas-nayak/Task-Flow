@@ -1,6 +1,6 @@
 "use client";
 import '@xyflow/react/dist/style.css'
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
     ReactFlow,
     Controls,
@@ -19,12 +19,18 @@ import CustomNode from './custom-node';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '../ui/resizable';
 import EditorCanvasSidebar from './editor-canvas-sidebar';
 import DragCard from './editor-canvas-card';
+import { METHODS } from 'http';
+import { useUser } from '@clerk/nextjs';
+import { useFlow } from '@/providers/flow-provider';
 
 const nodeTypes = { customNode: CustomNode };
 
 const initialNodes: Node[] = [];
 
 const initialEdges: Edge[] = [];
+
+
+
 
 function EditorCanvas() {
     const handleDragStart = (event: React.DragEvent, card: any) => {
@@ -48,8 +54,11 @@ function EditorCanvas() {
 }
 
 function Flow() {
-    const [nodes, setNodes] = useState<Node[]>(initialNodes);
-    const [edges, setEdges] = useState<Edge[]>(initialEdges);
+    const { nodes, setNodes, edges, setEdges } = useFlow();
+
+
+
+
 
     const onNodesChange = useCallback(
         (changes: NodeChange[]) => setNodes((nds) => applyNodeChanges(changes, nds)),

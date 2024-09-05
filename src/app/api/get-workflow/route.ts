@@ -1,20 +1,25 @@
-// pages/api/get-workflow.ts
-import { NextApiRequest, NextApiResponse } from 'next';
-import db from '@/lib/db'; 
-import { Node,Edge } from '@xyflow/react';
+import db from '@/lib/db';
+import { useUser } from '@clerk/nextjs';
+import { NextRequest, NextResponse } from 'next/server';
 
 
-export async function loadWorkflow(workflowId: string) {
-    try {
-      const response = await fetch(`/api/get-workflow/${workflowId}`);
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error('Error loading workflow:', error);
-      return { nodes: [], edges: [] };
-    }
+export async function GET(req: NextRequest, res: NextResponse) {
+
+  const workflowId = req.nextUrl.searchParams.get('workflowId');
+
+  if (!workflowId) {
+    return NextResponse.json({ error: 'Workflow not found' });
   }
+  // console.log(req.nextUrl.searchParams.get('workflowId'))
+  const workflow = await db.workflows.findFirst({
+    where: {
+      id: workflowId,
+    },
+  });
+  return NextResponse.json(workflow);
 
-  
 
-  
+}
+
+
+

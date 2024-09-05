@@ -81,7 +81,7 @@ const ConnectionCard = ({ connected }: Props) => {
                                         Connected
                                     </div>
                                 ) : (
-                                    <Link
+                                    <Link target='_blank'
                                         href={
                                             cardData.type === 'Discord'
                                                 ? process.env.NEXT_PUBLIC_DISCORD_REDIRECT || '#'

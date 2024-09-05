@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/providers/theme.provider";
 import { DM_Sans } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
+import { FlowProvider } from "@/providers/flow-provider";
 
 
 const inter = DM_Sans({ subsets: ["latin"] });
@@ -20,18 +21,20 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-    <html lang="en">
-      <body className={inter.className}>
-      <ThemeProvider
+      <html lang="en">
+        <body className={inter.className}>
+          <ThemeProvider
             attribute="class"
             defaultTheme="dark"
             enableSystem
             disableTransitionOnChange
           >
-        {children}
-        </ThemeProvider>
+            <FlowProvider>
+              {children}
+            </FlowProvider>
+          </ThemeProvider>
         </body>
-    </html>
+      </html>
     </ClerkProvider>
   );
 }

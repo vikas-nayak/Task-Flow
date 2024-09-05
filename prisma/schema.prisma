@@ -105,8 +105,8 @@ model Connections {
 
 model Workflows {
   id                String   @id @default(uuid())
-  nodes             String?
-  edges             String?
+  nodes             Json?
+  edges             Json?
   name              String
   discordTemplate   String?
   notionTemplate    String?
