@@ -1,92 +1,125 @@
-"use client"
-import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '../ui/button';
-import { HardDrive, BotMessageSquare, Database, Slack, BrainCircuit, Instagram, Linkedin } from 'lucide-react';
+"use client";
+import React, { useState } from 'react';
+import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import Link from 'next/link';
+import { Bot, Database, Slack, File, HardDrive, BrainCircuit } from 'lucide-react'; // Importing Lucide icons
+import { ConnectionTypes } from '@/lib/types';
 import { ScrollArea } from '../ui/scroll-area';
-import { useState } from 'react';
-import { useTheme } from 'next-themes';
-
-
 
 // Define the type for card data
 type CardData = {
     name: string;
     description: string;
     icon: React.ReactNode;
-    }
-    
-    // Map icon names to components
-    const iconMap: Record<string, React.ReactNode> = {
-        HardDrive: <HardDrive className='w-8 h-8' />,
-        BotMessageSquare: <BotMessageSquare className='w-8 h-8' />,
-    Database: <Database className='w-8 h-8' />,
-    Slack: <Slack className='w-8 h-8' />,
-    BrainCircuit: <BrainCircuit className='w-8 h-8' />,
-    Instagram: <Instagram className='w-8 h-8' />,
-    Linkedin: <Linkedin className='w-8 h-8' />,
+    type: ConnectionTypes;
 };
 
+// Define an array with Lucide icons for different platforms
 const cardDataArray: CardData[] = [
-    { name: "Google Drive", description: "Here goes the card description", icon: iconMap.HardDrive },
-    { name: "Discord", description: "Securely store your files", icon: iconMap.BotMessageSquare },
-    { name: "Notion", description: "Access your files anywhere", icon: iconMap.Database },
-    { name: "Slack", description: "Collaborate efficiently", icon: iconMap.Slack },
-    { name: "Instagram", description: "Post content efficiently", icon: iconMap.Instagram },
-    { name: "Linkedin", description: "Post content efficiently", icon: iconMap.Linkedin },
-    { name: "ChatGPT", description: "AI-powered assistance", icon: iconMap.BrainCircuit }
+    {
+        name: 'Discord',
+        description: 'Connect Discord to manage webhooks.',
+        icon: <Bot className="w-8 h-8" />, // Lucide Discord Icon
+        type: 'Discord',
+    },
+    {
+        name: 'Notion',
+        description: 'Sync with Notion workspace.',
+        icon: <Database className="w-8 h-8" />, // Lucide Database Icon for Notion
+        type: 'Notion',
+    },
+    {
+        name: 'Slack',
+        description: 'Integrate Slack for collaboration.',
+        icon: <Slack className="w-8 h-8" />, // Lucide Slack Icon
+        type: 'Slack',
+    },
+    {
+        name: 'Google Drive',
+        description: 'Connect with Google Drive.',
+        icon: <HardDrive className="w-8 h-8" />, // Lucide Google Drive Icon
+        type: 'GoogleDrive',
+    },
+    {
+        name: 'ChatGPT',
+        description: 'Connect with ChatGPT.',
+        icon: <BrainCircuit className="w-8 h-8" />, // Lucide File Icon for ChatGPT
+        type: 'ChatGPT',
+    },
+    // Add more platforms here if needed
 ];
 
-function ConnectionCard() {
-    // State to manage button text and style
-    const [connected, setConnected] = useState<Record<number, boolean>>({});
-    const { theme } = useTheme();
+// This is the main ConnectionCard component
+type Props = {
+    connected: Record<ConnectionTypes, boolean>;
+};
 
-    // Toggle button state
-    const handleButtonClick = (index: number) => {
-        setConnected((prevState) => ({
-            ...prevState,
-            [index]: !prevState[index]
-        }));
-    };
+const ConnectionCard = ({ connected }: Props) => {
     return (
-        <div className='h-screen'>
+        <div className='h-full'>
             <ScrollArea className='h-full p-4'>
                 <div className='w-full min-h-screen p-5'>
                     <div className='flex justify-between w-full items-center mb-5'>
                         <h1 className='text-2xl'>Workflows</h1>
                     </div>
-                    <div>
-                        {cardDataArray.map((cardData, index) => (
-                            <Card key={index} className='relative m-4'>
-                                <div className='flex justify-between items-center'>
-                                    <CardHeader>
-                                        <CardContent className='flex justify-start pl-0 pb-2'>
-                                            {cardData.icon}
-                                        </CardContent>
-                                        <CardTitle>{cardData.name}</CardTitle>
+                    {cardDataArray.map((cardData) => (
+                        <Card key={cardData.type} className="flex w-full items-center justify-between my-4">
+                            <CardHeader className="flex flex-row items-center justify-between">
+                                <div className="flex flex-row gap-4 items-center">
+                                    {/* Lucide Icon */}
+                                    {cardData.icon}
+                                    <div>
+                                        <CardTitle className="text-lg">{cardData.name}</CardTitle>
                                         <CardDescription>{cardData.description}</CardDescription>
-                                    </CardHeader>
-                                    <Button
-                                        className={`mr-4 ${connected[index]
-                                                ? `bg-transparent ${theme === 'light'
-                                                    ? 'text-black border-black hover:bg-gray-200'
-                                                    : 'text-white border-white hover:bg-black'
-                                                } border-solid border-[1px]`
-                                                : 'variant: outline'
-                                            }`}
-                                        onClick={() => handleButtonClick(index)}
-                                    >
-                                        {connected[index] ? 'Connected' : 'Connect'}
-                                    </Button>
+                                    </div>
                                 </div>
-                            </Card>
-                        ))}
-                    </div>
+                            </CardHeader>
+                            <div className="flex flex-col items-center gap-2 p-4">
+                                {/* Check if the platform is connected */}
+                                {connected[cardData.type] !== undefined && connected[cardData.type] ? (
+                                    <div className="border-bg-primary rounded-lg border-2 px-3 py-2 text-white">
+                                        Connected
+                                    </div>
+                                ) : (
+                                    <Link
+                                        href={
+                                            cardData.type === 'Discord'
+                                                ? process.env.NEXT_PUBLIC_DISCORD_REDIRECT || '#'
+                                                : cardData.type === 'Notion'
+                                                    ? process.env.NEXT_PUBLIC_NOTION_AUTH_URL || '#'
+                                                    : cardData.type === 'Slack'
+                                                        ? process.env.NEXT_PUBLIC_SLACK_REDIRECT || '#'
+                                                        : cardData.type === 'ChatGPT'
+                                                            ? process.env.NEXT_PUBLIC_CHATGPT_REDIRECT || '#'
+                                                            : '#'
+                                        }
+                                        className="rounded-lg bg-primary p-2 font-bold text-primary-foreground"
+                                    >
+                                        Connect
+                                    </Link>
+
+                                )}
+                            </div>
+                        </Card>
+                    ))}
                 </div>
             </ScrollArea>
         </div>
     );
-}
+};
 
-export default ConnectionCard;
+// Parent component example to initialize the `connected` state
+const ParentComponent = () => {
+    // Example state that tracks the connection status of each platform
+    const [connected, setConnected] = useState<Record<ConnectionTypes, boolean>>({
+        Discord: false,
+        Notion: false,
+        Slack: false,
+        GoogleDrive: false,
+        ChatGPT: false,
+    });
+
+    return <ConnectionCard connected={connected} />;
+};
+
+export default ParentComponent;
