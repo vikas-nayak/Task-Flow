@@ -3,24 +3,31 @@ import db from '@/lib/db'; // Assuming you're using Prisma and this is your data
 import { currentUser } from '@clerk/nextjs/server';
 
 export async function POST(request: Request) {
-  const userId = await currentUser()
   try {
-    const {nodes, edges, workflowId } = await request.json(); // Parse the incoming JSON data
-    console.log(nodes, edges)
+    // Parse incoming JSON data
+    const { nodes, edges, workflowId, name, description } = await request.json();
+    console.log('Received data:', { nodes, edges, workflowId, name, description });
 
-    // Save the workflow data to your databas using Prisma
+    // Ensure that nodes and edges are valid arrays
+    if (!Array.isArray(nodes) || !Array.isArray(edges)) {
+      throw new Error('Invalid data format: nodes and edges should be arrays.');
+    }
+
+    // Save the workflow data to your database using Prisma
     const savedWorkflow = await db.workflows.update({
-      where:{
-        id: workflowId
+      where: {
+        id: workflowId,
       },
       data: {
-        nodes,
-        edges,
+        nodes,         // Store data directly as JSON
+        edges,         // Store data directly as JSON
+        name,          // Save the name
+        description,   // Save the description
       },
     });
-    console.log(savedWorkflow);
+    console.log('Saved workflow:', savedWorkflow);
 
-    return NextResponse.json({ message: 'Workflow saved successfully!',savedWorkflow});
+    return NextResponse.json({ message: 'Workflow saved successfully!', savedWorkflow });
   } catch (error) {
     console.error('Error saving workflow:', error);
     return NextResponse.json({ error: 'Failed to save workflow' }, { status: 500 });
