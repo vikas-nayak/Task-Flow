@@ -1,5 +1,5 @@
 "use client";
-import '@xyflow/react/dist/style.css'
+import '@xyflow/react/dist/style.css';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
     ReactFlow,
@@ -19,21 +19,21 @@ import CustomNode from './custom-node';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '../ui/resizable';
 import EditorCanvasSidebar from './editor-canvas-sidebar';
 import DragCard from './editor-canvas-card';
-import { METHODS } from 'http';
-import { useUser } from '@clerk/nextjs';
 import { useFlow } from '@/providers/flow-provider';
+
+interface CustomNodeData {
+  icon?: string;
+  name?: string;
+  description?: string;
+}
 
 const nodeTypes = { customNode: CustomNode };
 
 const initialNodes: Node[] = [];
-
 const initialEdges: Edge[] = [];
 
-
-
-
 function EditorCanvas() {
-    const handleDragStart = (event: React.DragEvent, card: any) => {
+    const handleDragStart = (event: React.DragEvent, card: CustomNodeData) => {
         event.dataTransfer.setData('application/reactflow', JSON.stringify(card));
     };
 
@@ -56,37 +56,36 @@ function EditorCanvas() {
 function Flow() {
     const { nodes, setNodes, edges, setEdges } = useFlow();
 
-
-
-
-
     const onNodesChange = useCallback(
         (changes: NodeChange[]) => setNodes((nds) => applyNodeChanges(changes, nds)),
-        []
+        [setNodes]
     );
     const onEdgesChange = useCallback(
         (changes: EdgeChange[]) => setEdges((eds) => applyEdgeChanges(changes, eds)),
-        []
+        [setEdges]
     );
-
     const onConnect = useCallback(
         (params: Connection) => setEdges((eds) => addEdge(params, eds)),
-        []
+        [setEdges]
     );
 
     const onDrop = useCallback(
         (event: React.DragEvent) => {
             event.preventDefault();
             const data = JSON.parse(event.dataTransfer.getData('application/reactflow'));
+            const rect = (event.target as HTMLElement).getBoundingClientRect();
             const newNode: Node = {
                 id: `${Math.random()}`,
                 type: 'customNode',
-                position: { x: event.clientX, y: event.clientY },
+                position: {
+                    x: event.clientX - rect.left,
+                    y: event.clientY - rect.top,
+                },
                 data: data,
             };
             setNodes((nds) => nds.concat(newNode));
         },
-        []
+        [setNodes]
     );
 
     const onDragOver = useCallback((event: React.DragEvent) => {

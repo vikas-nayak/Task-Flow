@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Tabs, TabsList, TabsTrigger } from '../ui/tabs';
 import { Separator } from '../ui/separator';
 import { Button } from '../ui/button';
@@ -8,29 +8,26 @@ import { Edge, Node } from '@xyflow/react';
 
 interface EditorCanvasSidebarProps {}
 
-function EditorCanvasSidebar() {
+const EditorCanvasSidebar: React.FC<EditorCanvasSidebarProps> = () => {
   const { nodes, edges, setNodes, setEdges } = useFlow();
-  const { user } = useUser();
+  const [workflowId, setWorkflowId] = useState<string>('');
 
-  // Temporary workflowId - replace with actual workflowId fetching logic
-  const [workflowId, setWorkflowId] = useState('c8602ca9-473e-4c41-ad29-9c9fe35e8957');
-
-  const fetchFirstWorkflowId = async () => {
+  const fetchFirstWorkflowId = useCallback(async () => {
     try {
-      const response = await fetch('/api/get-workflow-id'); // API to fetch workflow IDs
+      const response = await fetch('/api/get-workflow-id');
       if (!response.ok) {
         throw new Error('Failed to fetch workflow IDs');
       }
-      const workflows = await response.json();
+      const workflows: string[] = await response.json();
       if (workflows.length > 0) {
-        setWorkflowId(workflows[0]); // Set the first workflow ID
+        setWorkflowId(workflows[0]);
       }
     } catch (error) {
       console.error('Error fetching workflow ID:', error);
     }
-  };
+  }, []);
 
-  const saveFlow = async (workflowId: string, nodes: Node[], edges: Edge[]) => {
+  const saveFlow = useCallback(async (workflowId: string, nodes: Node[], edges: Edge[]) => {
     const sanitizedNodes = nodes.map(node => ({
       id: node.id,
       position: node.position,
@@ -66,60 +63,64 @@ function EditorCanvasSidebar() {
     } catch (error) {
       console.error('Error saving flow:', error);
     }
-  };
+  }, []);
 
-  const fetchWorkflow = async (workflowId: string) => {
+  const fetchWorkflow = useCallback(async (workflowId: string) => {
     try {
-        const response = await fetch(`/api/get-workflow?workflowId=${workflowId}`);
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(`Failed to fetch workflow: ${errorData.message}`);
-        }
-    
-        const workflow = await response.json();
-        console.log('Fetched workflow:', workflow); // Debugging line
-    
-        if (workflow) {
-            const desanitizedNodes = workflow.nodes.map(node => ({
-                ...node,
-                data: {
-                    ...node.data,
-                    // Ensure data structure matches CustomNodeData
-                    icon: node.data.icon,
-                    name: node.data.name,
-                    description: node.data.description
-                }
-            }));
-    
-            const desanitizedEdges = workflow.edges;
-    
-            console.log('Desanitized nodes:', desanitizedNodes); // Debugging line
-            console.log('Desanitized edges:', desanitizedEdges); // Debugging line
-    
-            setNodes(desanitizedNodes);
-            setEdges(desanitizedEdges);
-        }
-    } catch (error) {
-        console.error('Error fetching workflow:', error);
-    }
-};
+      const response = await fetch(`/api/get-workflow?workflowId=${workflowId}`);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(`Failed to fetch workflow: ${errorData.message}`);
+      }
 
-useEffect(() => {
-  fetchFirstWorkflowId();
-}, []);
+      const workflow = await response.json();
+      console.log('Fetched workflow:', workflow);
+
+      if (workflow) {
+        const desanitizedNodes = workflow.nodes.map((node: any) => ({
+          ...node,
+          data: {
+            ...(node.data || {}),
+            icon: node.data?.icon,
+            name: node.data?.name,
+            description: node.data?.description,
+          }
+        }));
+
+        const desanitizedEdges = workflow.edges;
+
+        console.log('Desanitized nodes:', desanitizedNodes);
+        console.log('Desanitized edges:', desanitizedEdges);
+
+        setNodes(desanitizedNodes);
+        setEdges(desanitizedEdges);
+      }
+    } catch (error) {
+      console.error('Error fetching workflow:', error);
+    }
+  }, [setNodes, setEdges]);
+
+  useEffect(() => {
+    fetchFirstWorkflowId();
+  }, [fetchFirstWorkflowId]);
 
   useEffect(() => {
     if (workflowId) {
       fetchWorkflow(workflowId);
     }
-  }, [workflowId]);
+  }, [workflowId, fetchWorkflow]);
+
+  const handleClear = useCallback(() => {
+    setNodes([]);
+    setEdges([]);
+  }, [setNodes, setEdges]);
 
   return (
     <div>
       <div className="">
         <div className="">
           <Button onClick={() => saveFlow(workflowId, nodes, edges)}>Save</Button>
-          <Button className="m-3" variant={'ghost'}>Clear</Button>
+          <Button className="m-3" variant="ghost" onClick={handleClear}>Clear</Button>
         </div>
 
         <Tabs>
@@ -132,6 +133,6 @@ useEffect(() => {
       <Separator />
     </div>
   );
-}
+};
 
 export default EditorCanvasSidebar;

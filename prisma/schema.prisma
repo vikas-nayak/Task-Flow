@@ -102,7 +102,6 @@ model Connections {
   Slack            Slack?          @relation(fields: [slackId], references: [id])
   slackId          String?
 }
-
 model Workflows {
   id                String   @id @default(uuid())
   nodes             Json?
@@ -119,6 +118,6 @@ model Workflows {
   cronPath          String?
   publish           Boolean? @default(false)
   description       String
-  User              User     @relation(fields: [userId], references: [clerkId])
   userId            String
+  User              User     @relation(fields: [userId], references: [clerkId])
 }

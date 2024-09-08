@@ -1,11 +1,14 @@
 import { NextResponse } from 'next/server';
-import db from '@/lib/db'; // Assuming you're using Prisma and this is your database client
+import db from '@/lib/db'; // Prisma client import
 import { currentUser } from '@clerk/nextjs/server';
 
 export async function GET(request: Request) {
-  const userId = await currentUser(); // Fetch the current user (if needed for multi-user support)
-
   try {
+    const user = await currentUser(); // Fetch the current user (if needed for multi-user support)
+
+    // If user-based filtering is needed, you can adjust the query here
+    // For example: if (user) { /* use user.id to filter workflows */ }
+
     // Fetch workflow IDs from the database using Prisma
     const workflows = await db.workflows.findMany({
       select: { id: true }, // Only select the workflow IDs
