@@ -117,7 +117,7 @@ const WorkflowCard = () => {
                     >
                         <Trash2 color="orange" />
                     </Button>
-                    <Link href={`workflows/${workflow.id}`}>
+                    <Link href={`/workflows/${workflow.id}`}>
                         <CardHeader>
                             <CardTitle>{workflow.name}</CardTitle>
                             <CardDescription>{workflow.description}</CardDescription>
@@ -131,9 +131,9 @@ const WorkflowCard = () => {
                     <div className="absolute bottom-5 right-5 flex items-center space-x-2">
                         <Label htmlFor={`workflow-${workflow.id}`}>On</Label>
                         <Switch
-                            id={`workflow-${workflow.id}`}
-                            checked={workflow.isEnabled}
-                            onCheckedChange={() => handleToggle(workflow.id, workflow.isEnabled)}
+                            // id={`workflow-${workflow.id}`}
+                            // checked={workflow.isEnabled}
+                            // onCheckedChange={() => handleToggle(workflow.id, workflow.isEnabled)}
                         />
                     </div>
                 </Card>
