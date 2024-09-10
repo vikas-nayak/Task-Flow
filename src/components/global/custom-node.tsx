@@ -37,7 +37,8 @@ interface CustomNodeProps {
 const CustomNode: React.FC<CustomNodeProps> = ({ data, id }) => {
     const IconComponent = iconMapping[data.icon];
 
-    console.log('CustomNode data:', data); // Add this line for debugging
+    // Log statement to check if data is being passed correctly
+    console.log('CustomNode data:', data);
 
     return (
         <div className="p-4 border rounded-lg bg-white shadow-md relative" id={id}>
@@ -64,6 +65,5 @@ const CustomNode: React.FC<CustomNodeProps> = ({ data, id }) => {
         </div>
     );
 };
-
 
 export default CustomNode;

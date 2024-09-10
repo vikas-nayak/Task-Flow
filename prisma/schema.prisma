@@ -83,8 +83,8 @@ model Notion {
   accessToken   String        @unique
   workspaceId   String        @unique
   databaseId    String        @unique
-  workspaceName String
-  workspaceIcon String
+  workspaceName String?
+  workspaceIcon String?
   User          User          @relation(fields: [userId], references: [clerkId])
   userId        String
   connections   Connections[]

@@ -117,7 +117,7 @@ const WorkflowCard = () => {
                     >
                         <Trash2 color="orange" />
                     </Button>
-                    <Link href={`/workflows/${workflow.id}`}>
+                    <Link href={`workflows/${workflow.id}`}>
                         <CardHeader>
                             <CardTitle>{workflow.name}</CardTitle>
                             <CardDescription>{workflow.description}</CardDescription>

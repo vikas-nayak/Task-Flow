@@ -12,6 +12,7 @@
     "@clerk/elements": "^0.14.0",
     "@clerk/nextjs": "^5.3.3",
     "@hookform/resolvers": "^3.9.0",
+    "@notionhq/client": "^2.2.15",
     "@prisma/client": "^5.19.1",
     "@radix-ui/react-dialog": "^1.1.1",
     "@radix-ui/react-dropdown-menu": "^2.1.1",

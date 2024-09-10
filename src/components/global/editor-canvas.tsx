@@ -72,7 +72,7 @@ function Flow() {
     const onDrop = useCallback(
         (event: React.DragEvent) => {
             event.preventDefault();
-            const data = JSON.parse(event.dataTransfer.getData('application/reactflow'));
+            const data: CustomNodeData = JSON.parse(event.dataTransfer.getData('application/reactflow')); // parse data
             const rect = (event.target as HTMLElement).getBoundingClientRect();
             const newNode: Node = {
                 id: `${Math.random()}`,
@@ -81,17 +81,22 @@ function Flow() {
                     x: event.clientX - rect.left,
                     y: event.clientY - rect.top,
                 },
-                data: data,
+                data: {
+                    ...data,  // include all data, like name, icon, etc.
+                    name: data.name || 'Default Name',  // Ensure name is passed
+                },
             };
             setNodes((nds) => nds.concat(newNode));
         },
         [setNodes]
     );
+    
 
     const onDragOver = useCallback((event: React.DragEvent) => {
         event.preventDefault();
     }, []);
 
+    // console.log('Nodes:', nodes);
     return (
         <div className="h-full w-full" onDrop={onDrop} onDragOver={onDragOver}>
             <ReactFlow
