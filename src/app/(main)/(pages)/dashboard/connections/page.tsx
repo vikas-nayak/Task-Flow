@@ -6,7 +6,7 @@ import { onDiscordConnect } from './_actions/discord-connection';
 import { onNotionConnect } from './_actions/notion-connection';
 import { onSlackConnect } from './_actions/slack-connection';
 import { getUserData } from './_actions/get-user';
-import { ScrollArea } from '@/components/ui/scroll-area'; // Import ScrollArea from Shadcn
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 type Props = {
   searchParams?: { [key: string]: string | undefined }
@@ -49,7 +49,7 @@ const Connections = async (props: Props) => {
       connections[connection.type] = true;
     });
 
-    return { ...connections, 'Google Drive': true };
+    return { ...connections, 'GoogleDrive': true };
   };
 
   const connections = await onUserConnections();
@@ -59,7 +59,7 @@ const Connections = async (props: Props) => {
       <div className="flex justify-between w-full items-center">
         <h1 className='text-2xl'>Connections</h1>
       </div>
-      <ScrollArea className="relative flex flex-col h-[500px]"> {/* Adjust height as needed */}
+      <ScrollArea className="relative flex flex-col h-[500px]">
         <section className="flex flex-col">
           {CONNECTIONS.map((connection) => (
             <ConnectionCard

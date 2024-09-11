@@ -5,7 +5,7 @@ export const CONNECTIONS: Connection[] = [
         title: 'GoogleDrive',
         description: 'Connect your google drive to listen to folder changes',
         connectionKey: 'googleNode',
-        // alwaysTrue: true, //WIP - Always true for now
+        alwaysTrue: true,
     },
     {
         title: 'Discord',
