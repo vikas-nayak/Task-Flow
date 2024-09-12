@@ -2,38 +2,32 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { Tabs, TabsList, TabsTrigger } from '../ui/tabs';
 import { Separator } from '../ui/separator';
 import { Button } from '../ui/button';
-import { useFlow } from '@/providers/flow-provider';
-import { useUser } from '@clerk/nextjs';
-import { Edge, Node } from '@xyflow/react';
+import { useFlow } from '@/providers/flow-provider';  // For node and edge state
+import { Node, Edge } from '@xyflow/react';
 
-interface EditorCanvasSidebarProps {}
-
-const EditorCanvasSidebar: React.FC<EditorCanvasSidebarProps> = () => {
+const EditorCanvasSidebar: React.FC = () => {
   const { nodes, edges, setNodes, setEdges } = useFlow();
   const [workflowId, setWorkflowId] = useState<string>('');
 
+  // Fetch first workflow ID
   const fetchFirstWorkflowId = useCallback(async () => {
     try {
       const response = await fetch('/api/get-workflow-id');
-      if (!response.ok) {
-        throw new Error('Failed to fetch workflow IDs');
-      }
+      if (!response.ok) throw new Error('Failed to fetch workflow IDs');
       const workflows: string[] = await response.json();
-      if (workflows.length > 0) {
-        setWorkflowId(workflows[0]);
-      }
+      if (workflows.length > 0) setWorkflowId(workflows[0]);
     } catch (error) {
       console.error('Error fetching workflow ID:', error);
     }
   }, []);
 
+  // Save current workflow
   const saveFlow = useCallback(async (workflowId: string, nodes: Node[], edges: Edge[]) => {
     const sanitizedNodes = nodes.map(node => ({
       id: node.id,
       position: node.position,
       data: node.data,
     }));
-
     const sanitizedEdges = edges.map(edge => ({
       id: edge.id,
       source: edge.source,
@@ -44,9 +38,7 @@ const EditorCanvasSidebar: React.FC<EditorCanvasSidebarProps> = () => {
     try {
       const response = await fetch('/api/save-workflow', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           workflowId,
           nodes: sanitizedNodes,
@@ -65,6 +57,7 @@ const EditorCanvasSidebar: React.FC<EditorCanvasSidebarProps> = () => {
     }
   }, []);
 
+  // Fetch workflow based on workflow ID
   const fetchWorkflow = useCallback(async (workflowId: string) => {
     try {
       const response = await fetch(`/api/get-workflow?workflowId=${workflowId}`);
@@ -89,9 +82,6 @@ const EditorCanvasSidebar: React.FC<EditorCanvasSidebarProps> = () => {
 
         const desanitizedEdges = workflow.edges;
 
-        console.log('Desanitized nodes:', desanitizedNodes);
-        console.log('Desanitized edges:', desanitizedEdges);
-
         setNodes(desanitizedNodes);
         setEdges(desanitizedEdges);
       }
@@ -110,6 +100,7 @@ const EditorCanvasSidebar: React.FC<EditorCanvasSidebarProps> = () => {
     }
   }, [workflowId, fetchWorkflow]);
 
+  // Clear nodes and edges
   const handleClear = useCallback(() => {
     setNodes([]);
     setEdges([]);
@@ -118,7 +109,7 @@ const EditorCanvasSidebar: React.FC<EditorCanvasSidebarProps> = () => {
   return (
     <div>
       <div className="">
-        <div className="">
+        <div className="ml-4">
           <Button onClick={() => saveFlow(workflowId, nodes, edges)}>Save</Button>
           <Button className="m-3" variant="ghost" onClick={handleClear}>Clear</Button>
         </div>
