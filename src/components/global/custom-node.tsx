@@ -34,20 +34,17 @@ interface CustomNodeProps {
 }
 
 const CustomNode: React.FC<CustomNodeProps> = ({ data, id }) => {
-    console.log("Rendering CustomNode component with ID:", id); // Debugging line
     const [nodeData, setNodeData] = useState<CustomNodeData | null>(null);
-    const IconComponent = iconMapping[nodeData?.icon || data.icon];
 
+    // Ensure icon is derived from either the fetched nodeData or initial data prop
+    const IconComponent = iconMapping[(nodeData?.icon || data.icon) as keyof IconMapping];
+
+    // Fetch node data based on id
     useEffect(() => {
-        console.log("Fetching node data for ID:", id); // Debugging line
         const fetchNodeData = async () => {
             try {
-                const response = await fetch(`/api/get-node?id=${id}`);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch node data');
-                }
+                const response = await fetch(`/api/get-workflow?id=${id}`);
                 const fetchedData: CustomNodeData = await response.json();
-                console.log('Fetched node data:', fetchedData); // Debugging line
                 setNodeData(fetchedData);
             } catch (error) {
                 console.error('Error fetching node data:', error);
@@ -57,10 +54,23 @@ const CustomNode: React.FC<CustomNodeProps> = ({ data, id }) => {
         fetchNodeData();
     }, [id]);
 
-    if (!nodeData) {
-        console.log('Loading state...'); // Debugging line
-        return <div>Loading...</div>;
-    }
+    useEffect(() => {
+        const fetchNodeData = async () => {
+            try {
+                const response = await fetch(`/api/get-workflow?id=${id}`);
+                const fetchedData = await response.json();
+                console.log('Fetched node data:', fetchedData);
+                setNodeData(fetchedData);
+            } catch (error) {
+                console.error('Error fetching node data:', error);
+            }
+        };
+    
+        fetchNodeData();
+    }, [id]);
+    
+    console.log('Updated node data in state:', nodeData);
+    
 
     return (
         <div className="p-4 border rounded-lg bg-white shadow-md relative" id={id}>
@@ -73,8 +83,9 @@ const CustomNode: React.FC<CustomNodeProps> = ({ data, id }) => {
             <div className="flex justify-start">
                 {IconComponent && <IconComponent className="w-8 h-8 mb-2 text-gray-700" />}
                 <div>
-                    <p className="font-semibold text-gray-900 pl-4">{nodeData.name}</p>
-                    <p className="text-sm text-gray-500 pl-4">{nodeData.description}</p>
+                    {/* Always prioritize fetched nodeData over initial data */}
+                    <p className="font-semibold text-gray-900 pl-4">{nodeData?.name || data.name}</p>
+                    <p className="text-sm text-gray-500 pl-4">{nodeData?.description || data.description}</p>
                     <p className="text-xs text-gray-400 pl-4">ID: {id}</p>
                 </div>
             </div>
