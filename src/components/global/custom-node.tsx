@@ -1,7 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Handle, Position } from '@xyflow/react';
 import { HardDrive, BotMessageSquare, Database, Slack, BrainCircuit, Instagram, Linkedin } from 'lucide-react';
-import { v4 as uuidv4 } from 'uuid'; // Import uuid
 
 interface IconMapping {
     HardDrive: React.ComponentType<React.SVGProps<SVGSVGElement>>;
@@ -35,10 +34,33 @@ interface CustomNodeProps {
 }
 
 const CustomNode: React.FC<CustomNodeProps> = ({ data, id }) => {
-    const IconComponent = iconMapping[data.icon];
+    console.log("Rendering CustomNode component with ID:", id); // Debugging line
+    const [nodeData, setNodeData] = useState<CustomNodeData | null>(null);
+    const IconComponent = iconMapping[nodeData?.icon || data.icon];
 
-    // Log statement to check if data is being passed correctly
-    console.log('CustomNode data:', data);
+    useEffect(() => {
+        console.log("Fetching node data for ID:", id); // Debugging line
+        const fetchNodeData = async () => {
+            try {
+                const response = await fetch(`/api/get-node?id=${id}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch node data');
+                }
+                const fetchedData: CustomNodeData = await response.json();
+                console.log('Fetched node data:', fetchedData); // Debugging line
+                setNodeData(fetchedData);
+            } catch (error) {
+                console.error('Error fetching node data:', error);
+            }
+        };
+
+        fetchNodeData();
+    }, [id]);
+
+    if (!nodeData) {
+        console.log('Loading state...'); // Debugging line
+        return <div>Loading...</div>;
+    }
 
     return (
         <div className="p-4 border rounded-lg bg-white shadow-md relative" id={id}>
@@ -51,8 +73,8 @@ const CustomNode: React.FC<CustomNodeProps> = ({ data, id }) => {
             <div className="flex justify-start">
                 {IconComponent && <IconComponent className="w-8 h-8 mb-2 text-gray-700" />}
                 <div>
-                    <p className="font-semibold text-gray-900 pl-4">{data.name}</p>
-                    <p className="text-sm text-gray-500 pl-4">{data.description}</p>
+                    <p className="font-semibold text-gray-900 pl-4">{nodeData.name}</p>
+                    <p className="text-sm text-gray-500 pl-4">{nodeData.description}</p>
                     <p className="text-xs text-gray-400 pl-4">ID: {id}</p>
                 </div>
             </div>
@@ -65,5 +87,6 @@ const CustomNode: React.FC<CustomNodeProps> = ({ data, id }) => {
         </div>
     );
 };
+
 
 export default CustomNode;

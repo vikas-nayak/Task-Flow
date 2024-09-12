@@ -58,6 +58,8 @@ const Flow: React.FC = () => {
                     name: data.name || 'Default Name',
                 },
             };
+            console.log('New Node created:', newNode); // Log the node creation
+
             setNodes((nds) => nds.concat(newNode));
         },
         [setNodes]
