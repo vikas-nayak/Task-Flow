@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@clerk/elements": "^0.14.0",
-    "@clerk/nextjs": "^5.3.3",
+    "@clerk/nextjs": "^5.5.2",
     "@hookform/resolvers": "^3.9.0",
     "@notionhq/client": "^2.2.15",
     "@prisma/client": "^5.19.1",
