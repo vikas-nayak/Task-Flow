@@ -2,12 +2,26 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { Tabs, TabsList, TabsTrigger } from '../ui/tabs';
 import { Separator } from '../ui/separator';
 import { Button } from '../ui/button';
-import { useFlow } from '@/providers/flow-provider';  // For node and edge state
+import { ScrollArea } from '../ui/scroll-area'; 
+import DragCard from './editor-canvas-card';
+import { useFlow } from '@/providers/flow-provider';
 import { Node, Edge } from '@xyflow/react';
+
+interface CustomNodeData {
+  icon?: string;
+  name?: string;
+  description?: string;
+}
 
 const EditorCanvasSidebar: React.FC = () => {
   const { nodes, edges, setNodes, setEdges } = useFlow();
   const [workflowId, setWorkflowId] = useState<string>('');
+
+  // Handle drag start event
+  const handleDragStart = (event: React.DragEvent, card: CustomNodeData) => {
+    event.dataTransfer.setData('application/reactflow', JSON.stringify(card));
+    event.dataTransfer.effectAllowed = 'move';
+  };
 
   // Fetch first workflow ID
   const fetchFirstWorkflowId = useCallback(async () => {
@@ -108,20 +122,24 @@ const EditorCanvasSidebar: React.FC = () => {
 
   return (
     <div>
-      <div className="">
-        <div className="ml-4">
-          <Button onClick={() => saveFlow(workflowId, nodes, edges)}>Save</Button>
-          <Button className="m-3" variant="ghost" onClick={handleClear}>Clear</Button>
-        </div>
-
-        <Tabs>
-          <TabsList className="bg-transparent">
-            <TabsTrigger value="actions">Actions</TabsTrigger>
-            <TabsTrigger value="settings">Settings</TabsTrigger>
-          </TabsList>
-        </Tabs>
+      <div className="ml-4">
+        <Button onClick={() => saveFlow(workflowId, nodes, edges)}>Save</Button>
+        <Button className="m-3" variant="ghost" onClick={handleClear}>Clear</Button>
       </div>
+
+      <Tabs>
+        <TabsList className="bg-transparent">
+          <TabsTrigger value="actions">Actions</TabsTrigger>
+          <TabsTrigger value="settings">Settings</TabsTrigger>
+        </TabsList>
+      </Tabs>
       <Separator />
+
+      <ScrollArea className="h-[500px]">
+        <div className="p-2">
+          <DragCard onDragStart={handleDragStart} />
+        </div>
+      </ScrollArea>
     </div>
   );
 };
