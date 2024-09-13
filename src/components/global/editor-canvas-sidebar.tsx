@@ -9,6 +9,7 @@ import { Node, Edge } from '@xyflow/react';
 import { CONNECTIONS } from '@/lib/constant';
 import ConnectionCard from './connection-card';
 import { currentUser } from '@clerk/nextjs/server';
+import RenderAccordion from './render-accordion';
 
 interface CustomNodeData {
   icon?: string;
@@ -183,6 +184,7 @@ const EditorCanvasSidebar: React.FC = () => {
             ) : (
               <p>No connections available</p>
             )}
+            <RenderAccordion/>
           </div>
         </TabsContent>
       </Tabs>
