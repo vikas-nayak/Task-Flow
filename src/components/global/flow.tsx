@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useCallback } from 'react';
 import {
     ReactFlow,
@@ -13,6 +14,7 @@ import {
     Connection,
     Node,
     Edge,
+    ReactFlowInstance
 } from '@xyflow/react';
 import { useFlow } from '@/providers/flow-provider';
 import CustomNode from './custom-node';
@@ -26,7 +28,7 @@ interface CustomNodeData {
 const nodeTypes = { customNode: CustomNode };
 
 const Flow: React.FC = () => {
-    const { nodes, setNodes, edges, setEdges } = useFlow();
+    const { nodes, setNodes, edges, setEdges, setSelectedNode } = useFlow();
 
     const onNodesChange = useCallback(
         (changes: NodeChange[]) => setNodes((nds) => applyNodeChanges(changes, nds)),
@@ -69,6 +71,10 @@ const Flow: React.FC = () => {
         event.preventDefault();
     }, []);
 
+    const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
+        setSelectedNode(node);
+    }, [setSelectedNode]);
+
     return (
         <div className="h-full w-full" onDrop={onDrop} onDragOver={onDragOver}>
             <ReactFlow
@@ -80,6 +86,7 @@ const Flow: React.FC = () => {
                 fitView
                 style={{ height: '100%', width: '100%', color: 'black' }}
                 nodeTypes={nodeTypes}
+                onNodeClick={onNodeClick} // Add this line
             >
                 <Background />
                 <Controls position="top-left" style={{ color: 'black' }} />

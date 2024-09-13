@@ -15,7 +15,7 @@ function EditorCanvas() {
         </div>
       </ResizablePanel>
       <ResizableHandle withHandle />
-      <ResizablePanel className="flex flex-col">
+      <ResizablePanel className="flex flex-col w-[400px]">
         <EditorCanvasSidebar />
       </ResizablePanel>
     </ResizablePanelGroup>
