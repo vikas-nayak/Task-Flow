@@ -5,7 +5,9 @@ import { ThemeProvider } from "@/providers/theme.provider";
 import { DM_Sans } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { FlowProvider } from "@/providers/flow-provider";
-
+import { ToastProvider } from "@/components/ui/toast"; // Import ToastProvider
+import { Toast } from "@/components/ui/toast"; // Import the Toast component
+import { Toaster } from "@/components/ui/toaster";
 
 const inter = DM_Sans({ subsets: ["latin"] });
 
@@ -30,7 +32,10 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <FlowProvider>
-              {children}
+              <ToastProvider>
+                {children}
+                <Toast />
+              </ToastProvider>
             </FlowProvider>
           </ThemeProvider>
         </body>

@@ -83,10 +83,10 @@ const Flow: React.FC = () => {
                 edges={edges}
                 onEdgesChange={onEdgesChange}
                 onConnect={onConnect}
-                fitView
+                fitView = {false}
                 style={{ height: '100%', width: '100%', color: 'black' }}
                 nodeTypes={nodeTypes}
-                onNodeClick={onNodeClick} // Add this line
+                onNodeClick={onNodeClick}
             >
                 <Background />
                 <Controls position="top-left" style={{ color: 'black' }} />

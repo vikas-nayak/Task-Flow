@@ -6,6 +6,9 @@ import { ScrollArea } from '../ui/scroll-area';
 import DragCard from './editor-canvas-card';
 import { useFlow } from '@/providers/flow-provider';
 import { Node, Edge } from '@xyflow/react';
+import { CONNECTIONS } from '@/lib/constant';
+import ConnectionCard from './connection-card';
+import { currentUser } from '@clerk/nextjs/server';
 
 interface CustomNodeData {
   icon?: string;
@@ -16,6 +19,8 @@ interface CustomNodeData {
 const EditorCanvasSidebar: React.FC = () => {
   const { nodes, edges, setNodes, setEdges, selectedNode, setSelectedNode } = useFlow();
   const [workflowId, setWorkflowId] = useState<string>('');
+  const [connections, setConnections] = useState<Record<string, boolean>>({});
+  const [filteredConnections, setFilteredConnections] = useState<Record<string, boolean>>({});
 
   const handleDragStart = (event: React.DragEvent, card: CustomNodeData) => {
     event.dataTransfer.setData('application/reactflow', JSON.stringify(card));
@@ -56,6 +61,7 @@ const EditorCanvasSidebar: React.FC = () => {
           edges: sanitizedEdges,
         }),
       });
+      
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -110,6 +116,32 @@ const EditorCanvasSidebar: React.FC = () => {
     }
   }, [workflowId, fetchWorkflow]);
 
+  const fetchNodeConnections = useCallback(async (nodeId: string) => {
+    try {
+      const response = await fetch(`/api/get-node-connections?nodeId=${nodeId}`);
+      if (!response.ok) throw new Error('Failed to fetch node connections');
+      const { connections } = await response.json();
+      console.log('Fetched node connections:', connections);
+      
+      const connectionsMap = connections.reduce((acc: Record<string, boolean>, conn: { type: string }) => {
+        acc[conn.type] = true;
+        return acc;
+      }, {});
+
+      setFilteredConnections(connectionsMap);
+    } catch (error) {
+      console.error('Error fetching node connections:', error);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (selectedNode) {
+      fetchNodeConnections(selectedNode.id);
+    } else {
+      setFilteredConnections({});
+    }
+  }, [selectedNode, fetchNodeConnections]);
+
   const handleClear = useCallback(() => {
     setNodes([]);
     setEdges([]);
@@ -131,14 +163,26 @@ const EditorCanvasSidebar: React.FC = () => {
           <Separator />
           <ScrollArea className="h-[500px]">
             <div className="p-2">
-              <DragCard onDragStart={handleDragStart}/>
+              <DragCard onDragStart={handleDragStart} />
             </div>
           </ScrollArea>
         </TabsContent>
-        <TabsContent value="settings"> 
+        <TabsContent value="settings">
           <Separator />
           <div className="p-2">
             <p>{selectedNode ? selectedNode.data.name : 'No node selected'}</p>
+            {Object.keys(filteredConnections).length > 0 ? (
+              CONNECTIONS.filter(connection =>
+                filteredConnections[connection.title]
+              ).map((connection) => (
+                <ConnectionCard
+                  key={connection.title}
+                  connected={filteredConnections[connection.title]}
+                />
+              ))
+            ) : (
+              <p>No connections available</p>
+            )}
           </div>
         </TabsContent>
       </Tabs>
