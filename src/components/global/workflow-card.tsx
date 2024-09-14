@@ -12,6 +12,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Button } from "../ui/button";
 import { Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
 // Define interfaces for the API response and workflow
 interface Workflow {
@@ -71,8 +72,10 @@ const WorkflowCard = () => {
                 setWorkflows((prevWorkflows) =>
                     prevWorkflows.filter((workflow) => workflow.id !== workflowId)
                 );
-            } else {
-                console.error('Failed to delete workflow');
+                toast.success('Workflow deleted successfully');
+                } else {
+                    toast.error('Failed to delete workflow');
+                    console.error('Failed to delete workflow');
             }
         } catch (error) {
             console.error('Error:', error);

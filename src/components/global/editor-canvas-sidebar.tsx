@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../ui/tabs';
 import { Separator } from '../ui/separator';
 import { Button } from '../ui/button';
-import { ScrollArea } from '../ui/scroll-area'; 
+import { ScrollArea } from '../ui/scroll-area';
 import DragCard from './editor-canvas-card';
 import { useFlow } from '@/providers/flow-provider';
 import { Node, Edge } from '@xyflow/react';
@@ -10,6 +10,7 @@ import { CONNECTIONS } from '@/lib/constant';
 import ConnectionCard from './connection-card';
 import { currentUser } from '@clerk/nextjs/server';
 import RenderAccordion from './render-accordion';
+import { toast } from 'sonner';
 
 interface CustomNodeData {
   icon?: string;
@@ -62,15 +63,17 @@ const EditorCanvasSidebar: React.FC = () => {
           edges: sanitizedEdges,
         }),
       });
-      
+
 
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(`Failed to save flow: ${errorData.message}`);
       }
 
+      toast.success('Flow saved successfully');
       console.log('Flow saved successfully');
     } catch (error) {
+      toast.error('Failed to save flow');
       console.error('Error saving flow:', error);
     }
   }, []);
@@ -123,7 +126,7 @@ const EditorCanvasSidebar: React.FC = () => {
       if (!response.ok) throw new Error('Failed to fetch node connections');
       const { connections } = await response.json();
       console.log('Fetched node connections:', connections);
-      
+
       const connectionsMap = connections.reduce((acc: Record<string, boolean>, conn: { type: string }) => {
         acc[conn.type] = true;
         return acc;
@@ -184,7 +187,7 @@ const EditorCanvasSidebar: React.FC = () => {
             ) : (
               <p>No connections available</p>
             )}
-            <RenderAccordion/>
+            <RenderAccordion />
           </div>
         </TabsContent>
       </Tabs>

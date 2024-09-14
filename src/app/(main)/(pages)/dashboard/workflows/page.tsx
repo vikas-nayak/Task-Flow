@@ -18,6 +18,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import WorkflowCard from '@/components/global/workflow-card';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { toast } from 'sonner';
 
 function Page() {
   const { user } = useUser();
@@ -48,6 +49,7 @@ function Page() {
       });
 
       if (response.ok) {
+        toast.success('Workflow created successfully');
         const result = await response.json();
         console.log('Workflow created:', result);
         setName('');
@@ -55,6 +57,7 @@ function Page() {
         setError(null);
       } else {
         const errorData = await response.json();
+        toast.error('Failed to create workflow');
         console.error('Failed to create workflow:', errorData);
         setError(errorData.msg || 'Failed to create workflow');
       }
