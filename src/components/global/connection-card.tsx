@@ -42,7 +42,6 @@ const ConnectionCard = ({ connected }: Props) => {
                                     </div>
                                 ) : (
                                     <Link
-                                        target='_blank'
                                         href={
                                             connection.title === 'Discord'
                                                 ? process.env.NEXT_PUBLIC_DISCORD_REDIRECT || '#'

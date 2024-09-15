@@ -11,6 +11,7 @@ import ConnectionCard from './connection-card';
 import { currentUser } from '@clerk/nextjs/server';
 import RenderAccordion from './render-accordion';
 import { toast } from 'sonner';
+import { useNodeConnections } from '@/providers/connection-provider';
 
 interface CustomNodeData {
   icon?: string;
@@ -151,6 +152,9 @@ const EditorCanvasSidebar: React.FC = () => {
     setEdges([]);
   }, [setNodes, setEdges]);
 
+  const { nodeConnection } = useNodeConnections();
+
+
   return (
     <div>
       <div className="ml-4">
@@ -187,7 +191,10 @@ const EditorCanvasSidebar: React.FC = () => {
             ) : (
               <p>No connections available</p>
             )}
-            <RenderAccordion />
+            <RenderAccordion 
+            selectedNode={selectedNode}
+            nodeConnection={nodeConnection}
+            />
           </div>
         </TabsContent>
       </Tabs>

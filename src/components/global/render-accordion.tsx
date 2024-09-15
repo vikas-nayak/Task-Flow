@@ -1,32 +1,68 @@
 import React, { useState, useCallback } from 'react';
-import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
-} from "@/components/ui/accordion";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Card, CardContent } from '../ui/card';
 import { Button } from '../ui/button';
+import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { Input } from '../ui/input';
+import { ConnectionProviderProps } from '@/providers/connection-provider';
+import { onCreateNewPageInDatabase } from '@/app/(main)/(pages)/dashboard/connections/_actions/notion-connection';
+import { Option } from '../ui/multiple-selector';
 
 interface RenderAccordionProps {
-    selectedNode: any; // Define a more specific type based on your node structure
+    selectedNode: any;
+    nodeConnection: ConnectionProviderProps | null; // Allow null or undefined
 }
 
-const RenderAccordion: React.FC<RenderAccordionProps> = ({ selectedNode }) => {
+const RenderAccordion: React.FC<RenderAccordionProps> = ({ selectedNode, nodeConnection }) => {
     const [isListening, setIsListening] = useState(false);
     const [inputText, setInputText] = useState('');
+    const [loading, setLoading] = useState(false);
+
+    const onStoreNotionContent = useCallback(async () => {
+        console.log('onStoreNotionContent');
+        if (!nodeConnection || !nodeConnection.notionNode) {
+            console.error('nodeConnection or nodeConnection.notionNode is undefined');
+            return;
+        }
+
+        console.log(
+            nodeConnection.notionNode.databaseId,
+            nodeConnection.notionNode.accessToken,
+            nodeConnection.notionNode.content
+        );
+
+        try {
+            const response = await onCreateNewPageInDatabase(
+                nodeConnection.notionNode.databaseId,
+                nodeConnection.notionNode.accessToken,
+                nodeConnection.notionNode.content
+            );
+
+            if (response) {
+                nodeConnection.setNotionNode((prev: any) => ({
+                    ...prev,
+                    content: '',
+                }));
+                toast.success('New page created in database');
+            }
+        } catch (error) {
+            toast.error(error.message);
+            console.error('Error creating new page in database:', error);
+        }
+    }, [nodeConnection?.notionNode]);
 
     const handleListener = useCallback(async () => {
-
+        setLoading(true);
         try {
             const response = await fetch('/api/drive-activity');
             if (!response.ok) throw new Error('Failed to fetch activity');
             setIsListening(true);
             toast.success('Listening to Drive activity');
-            
         } catch (error) {
             console.error('Error', error);
+        } finally {
+            setLoading(false);
         }
     }, []);
 
@@ -34,39 +70,50 @@ const RenderAccordion: React.FC<RenderAccordionProps> = ({ selectedNode }) => {
         setInputText(event.target.value);
     };
 
-    const handleTestMessage = () => {
-        // Handle test message functionality
-        console.log('Test message:', inputText);
-    };
+    if (!nodeConnection) {
+        return <div>Loading...</div>; // Handle loading state or default message
+    }
 
     return (
-        <div className='pl-6'>
-            <Accordion type="single" collapsible className='w-[200px]'>
+        <div className='p-4'>
+            <Accordion type="single" collapsible className='w-[240px]'>
                 <AccordionItem value="item-1">
-                    <AccordionTrigger className='no-underline border-none'>Actions</AccordionTrigger>
+                    <AccordionTrigger className='no-underline border-none text-lg'>
+                        Actions
+                    </AccordionTrigger>
                     <AccordionContent>
-                        <Card className='h-[100px]'>
-                            <CardContent>
-                                <p>Message</p>
-                                {selectedNode ? (
-                                    selectedNode.data.type === 'googledrive' ? (
-                                        <p>Google Drive Node</p>
-                                    ) : (
-                                        <div>
-                                            <input
-                                                type="text"
-                                                value={inputText}
-                                                onChange={handleInputChange}
-                                                placeholder="Enter your message"
-                                                className="border border-gray-300 p-2 mb-2 w-full"
-                                            />
-                                            <Button onClick={handleTestMessage} variant='ghost'>
-                                                Test Message
-                                            </Button>
-                                        </div>
-                                    )
+                        <Card className='mb-4'>
+                            <CardContent className='p-4'>
+                                <p className='font-semibold mb-2'>Message</p>
+                                <div className='space-y-4'>
+                                    <Input
+                                        type="text"
+                                        value={inputText}
+                                        onChange={handleInputChange}
+                                        placeholder="Enter your message"
+                                        className="border border-gray-300 p-2 w-full"
+                                    />
+                                    <Button 
+                                        onClick={onStoreNotionContent} 
+                                        variant='outline' 
+                                        className='w-full'>
+                                        Test Message
+                                    </Button>
+                                </div>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardContent className='p-4'>
+                                {loading ? (
+                                    <Button disabled className='w-full'>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        Please wait
+                                    </Button>
                                 ) : (
-                                    <Button onClick={handleListener} variant={'ghost'} className='border border-gray-700 p-2 m-6'>
+                                    <Button 
+                                        onClick={handleListener} 
+                                        variant={'outline'} 
+                                        className='w-full p-2'>
                                         {isListening ? 'Listening' : 'Create Listener'}
                                     </Button>
                                 )}
