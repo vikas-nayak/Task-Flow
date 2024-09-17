@@ -194,6 +194,7 @@ const EditorCanvasSidebar: React.FC = () => {
             <RenderAccordion 
             selectedNode={selectedNode}
             nodeConnection={nodeConnection}
+            // setChannels={setSelectedSlackChannels}
             />
           </div>
         </TabsContent>

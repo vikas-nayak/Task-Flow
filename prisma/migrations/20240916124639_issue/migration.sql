@@ -3,7 +3,7 @@ CREATE TABLE "User" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "clerkId" TEXT NOT NULL,
     "name" TEXT,
-    "email" TEXT NOT NULL,
+    "email" TEXT,
     "profileImage" TEXT,
     "tier" TEXT DEFAULT 'Free',
     "credits" TEXT DEFAULT '10',
@@ -65,8 +65,8 @@ CREATE TABLE "Notion" (
     "accessToken" TEXT NOT NULL,
     "workspaceId" TEXT NOT NULL,
     "databaseId" TEXT NOT NULL,
-    "workspaceName" TEXT NOT NULL,
-    "workspaceIcon" TEXT NOT NULL,
+    "workspaceName" TEXT,
+    "workspaceIcon" TEXT,
     "userId" TEXT NOT NULL,
 
     CONSTRAINT "Notion_pkey" PRIMARY KEY ("id")
@@ -87,8 +87,8 @@ CREATE TABLE "Connections" (
 -- CreateTable
 CREATE TABLE "Workflows" (
     "id" TEXT NOT NULL,
-    "nodes" TEXT,
-    "edges" TEXT,
+    "nodes" JSONB,
+    "edges" JSONB,
     "name" TEXT NOT NULL,
     "discordTemplate" TEXT,
     "notionTemplate" TEXT,
@@ -108,9 +108,6 @@ CREATE TABLE "Workflows" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_clerkId_key" ON "User"("clerkId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_localGoogleId_key" ON "User"("localGoogleId");

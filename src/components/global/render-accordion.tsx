@@ -8,6 +8,7 @@ import { Input } from '../ui/input';
 import { ConnectionProviderProps } from '@/providers/connection-provider';
 import { onCreateNewPageInDatabase } from '@/app/(main)/(pages)/dashboard/connections/_actions/notion-connection';
 import { Option } from '../ui/multiple-selector';
+import { postMessageToSlack } from '@/app/(main)/(pages)/dashboard/connections/_actions/slack-connection';
 
 interface RenderAccordionProps {
     selectedNode: any;
@@ -18,6 +19,28 @@ const RenderAccordion: React.FC<RenderAccordionProps> = ({ selectedNode, nodeCon
     const [isListening, setIsListening] = useState(false);
     const [inputText, setInputText] = useState('');
     const [loading, setLoading] = useState(false);
+
+    const onStoreSlackContent = useCallback(async () => {
+        const response = await postMessageToSlack(
+          nodeConnection?.slackNode.slackAccessToken, // Assuming this still contains the access token for legacy reasons
+          [{ label: 'taskflow', value: 'C07KHJ1KWA0' }], // Hardcoded channel with the channel ID for taskflow
+          'ganpati bappa morya!!' // Hardcoded content
+        )
+      
+        if (response.message === 'Success') {
+          toast.success('Message sent successfully')
+          nodeConnection?.setSlackNode((prev: any) => ({
+            ...prev,
+            content: '', // Clear content after message is sent, though it's hardcoded
+          }))
+          // Comment out the dynamic channel logic if not in use
+          // setChannels!([])
+        } else {
+          toast.error(response.message)
+        }
+      }, [nodeConnection?.slackNode])
+      
+      
 
     const onStoreNotionContent = useCallback(async () => {
         console.log('onStoreNotionContent');
@@ -94,7 +117,7 @@ const RenderAccordion: React.FC<RenderAccordionProps> = ({ selectedNode, nodeCon
                                         className="border border-gray-300 p-2 w-full"
                                     />
                                     <Button 
-                                        onClick={onStoreNotionContent} 
+                                        onClick={onStoreSlackContent} 
                                         variant='outline' 
                                         className='w-full'>
                                         Test Message
