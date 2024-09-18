@@ -7,12 +7,12 @@ import { toast } from 'sonner';
 import { Input } from '../ui/input';
 import { ConnectionProviderProps } from '@/providers/connection-provider';
 import { onCreateNewPageInDatabase } from '@/app/(main)/(pages)/dashboard/connections/_actions/notion-connection';
-import { Option } from '../ui/multiple-selector';
 import { postMessageToSlack } from '@/app/(main)/(pages)/dashboard/connections/_actions/slack-connection';
+import { postContentToWebHook } from '@/app/(main)/(pages)/dashboard/connections/_actions/discord-connection';
 
 interface RenderAccordionProps {
     selectedNode: any;
-    nodeConnection: ConnectionProviderProps | null; // Allow null or undefined
+    nodeConnection: ConnectionProviderProps | null;
 }
 
 const RenderAccordion: React.FC<RenderAccordionProps> = ({ selectedNode, nodeConnection }) => {
@@ -20,40 +20,46 @@ const RenderAccordion: React.FC<RenderAccordionProps> = ({ selectedNode, nodeCon
     const [inputText, setInputText] = useState('');
     const [loading, setLoading] = useState(false);
 
+    const onSendDiscordMessage = useCallback(async () => {
+        const response = await postContentToWebHook(
+            inputText,
+            nodeConnection?.discordNode.webhookURL || 'https://discord.com/api/webhooks/1286008702264021109/mouelrLvazPe-tCVNaWJUc4YtvRfqtt3B9Gjd_cS6kWUYh0KJB5Ig-G2tpl0AKQCgEYT'
+        );
+        
+        if (response.message === 'success') {
+            nodeConnection?.setDiscordNode((prev: any) => ({
+                ...prev,
+                content: '',
+            }));
+            toast.success('Message sent successfully');
+        } else {
+            toast.error(response.message);
+        }
+    }, [inputText, nodeConnection?.discordNode]);
+
     const onStoreSlackContent = useCallback(async () => {
         const response = await postMessageToSlack(
-          nodeConnection?.slackNode.slackAccessToken, // Assuming this still contains the access token for legacy reasons
-          [{ label: 'taskflow', value: 'C07KHJ1KWA0' }], // Hardcoded channel with the channel ID for taskflow
-          'ganpati bappa morya!!' // Hardcoded content
-        )
-      
+            nodeConnection?.slackNode.slackAccessToken,
+            [{ label: 'taskflow', value: 'C07KHJ1KWA0' }], // Hardcoded channel ID for taskflow
+            'ganpati bappa morya!!' // Hardcoded content
+        );
+
         if (response.message === 'Success') {
-          toast.success('Message sent successfully')
-          nodeConnection?.setSlackNode((prev: any) => ({
-            ...prev,
-            content: '', // Clear content after message is sent, though it's hardcoded
-          }))
-          // Comment out the dynamic channel logic if not in use
-          // setChannels!([])
+            toast.success('Message sent successfully');
+            nodeConnection?.setSlackNode((prev: any) => ({
+                ...prev,
+                content: '',
+            }));
         } else {
-          toast.error(response.message)
+            toast.error(response.message);
         }
-      }, [nodeConnection?.slackNode])
-      
-      
+    }, [nodeConnection?.slackNode]);
 
     const onStoreNotionContent = useCallback(async () => {
-        console.log('onStoreNotionContent');
         if (!nodeConnection || !nodeConnection.notionNode) {
             console.error('nodeConnection or nodeConnection.notionNode is undefined');
             return;
         }
-
-        console.log(
-            nodeConnection.notionNode.databaseId,
-            nodeConnection.notionNode.accessToken,
-            nodeConnection.notionNode.content
-        );
 
         try {
             const response = await onCreateNewPageInDatabase(
@@ -70,7 +76,7 @@ const RenderAccordion: React.FC<RenderAccordionProps> = ({ selectedNode, nodeCon
                 toast.success('New page created in database');
             }
         } catch (error) {
-            toast.error(error.message);
+            toast.error((error as Error).message);
             console.error('Error creating new page in database:', error);
         }
     }, [nodeConnection?.notionNode]);
@@ -94,7 +100,7 @@ const RenderAccordion: React.FC<RenderAccordionProps> = ({ selectedNode, nodeCon
     };
 
     if (!nodeConnection) {
-        return <div>Loading...</div>; // Handle loading state or default message
+        return <div>Loading...</div>;
     }
 
     return (
@@ -117,7 +123,7 @@ const RenderAccordion: React.FC<RenderAccordionProps> = ({ selectedNode, nodeCon
                                         className="border border-gray-300 p-2 w-full"
                                     />
                                     <Button 
-                                        onClick={onStoreSlackContent} 
+                                        onClick={onSendDiscordMessage} 
                                         variant='outline' 
                                         className='w-full'>
                                         Test Message

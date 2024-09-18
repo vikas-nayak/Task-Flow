@@ -111,6 +111,8 @@ export const getDiscordConnectionUrl = async () => {
 
 export const postContentToWebHook = async (content: string, url: string) => {
   console.log(content)
+  console.log("URL for webhook:", url);
+
   if (content != '') {
     const posted = await axios.post(url, { content })
     if (posted) {
