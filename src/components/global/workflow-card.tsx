@@ -13,6 +13,7 @@ import { useState, useEffect } from "react";
 import { Button } from "../ui/button";
 import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { Skeleton } from "../ui/skeleton";
 
 // Define interfaces for the API response and workflow
 interface Workflow {
@@ -29,11 +30,13 @@ interface FetchWorkflowsResponse {
 const WorkflowCard = () => {
     const { user } = useUser();
     const [workflows, setWorkflows] = useState<Workflow[]>([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         if (!user) return;
 
         const fetchWorkflows = async () => {
+            setLoading(true);
             try {
                 const response = await fetch('/api/workflows', {
                     method: 'GET',
@@ -48,6 +51,7 @@ const WorkflowCard = () => {
                 } else {
                     console.error('Failed to fetch workflows');
                 }
+                setLoading(false);
             } catch (error) {
                 console.error('Error:', error);
             }
@@ -73,9 +77,9 @@ const WorkflowCard = () => {
                     prevWorkflows.filter((workflow) => workflow.id !== workflowId)
                 );
                 toast.success('Workflow deleted successfully');
-                } else {
-                    toast.error('Failed to delete workflow');
-                    console.error('Failed to delete workflow');
+            } else {
+                toast.error('Failed to delete workflow');
+                console.error('Failed to delete workflow');
             }
         } catch (error) {
             console.error('Error:', error);
@@ -111,37 +115,46 @@ const WorkflowCard = () => {
 
     return (
         <div>
-            {workflows.map((workflow) => (
-                <Card key={workflow.id} className="relative m-4">
-                    <Button
-                        variant="ghost"
-                        className="absolute top-2 right-2"
-                        onClick={() => onDelete(workflow.id)}
-                    >
-                        <Trash2 color="orange" />
-                    </Button>
-                    <Link href={`workflows/${workflow.id}`}>
-                        <CardHeader>
-                            <CardTitle>{workflow.name}</CardTitle>
-                            <CardDescription>{workflow.description}</CardDescription>
-                        </CardHeader>
-                    </Link>
-                    <CardContent className="flex justify-start space-x-4">
-                        <img src="/googleDrive.png" alt="Google Drive" className="w-8 h-8" />
-                        <img src="/notion.png" alt="Notion" className="w-8 h-8" />
-                        <img src="/discord.png" alt="Discord" className="w-8 h-8" />
-                    </CardContent>
-                    <div className="absolute bottom-5 right-5 flex items-center space-x-2">
-                        <Label htmlFor={`workflow-${workflow.id}`}>On</Label>
-                        <Switch
-                            // id={`workflow-${workflow.id}`}
-                            // checked={workflow.isEnabled}
-                            // onCheckedChange={() => handleToggle(workflow.id, workflow.isEnabled)}
-                        />
-                    </div>
-                </Card>
-            ))}
-        </div>
+    {loading ? (
+        <>
+        <Skeleton className="h-[155px] w-full rounded-xl p-4 mb-4" />
+        <Skeleton className="h-[155px] w-full rounded-xl p-4 mb-4" />
+        <Skeleton className="h-[155px] w-full rounded-xl p-4 mb-4" />
+        </>
+    ) : (
+        workflows.map((workflow) => (
+            <Card key={workflow.id} className="relative m-4">
+                <Button
+                    variant="ghost"
+                    className="absolute top-2 right-2"
+                    onClick={() => onDelete(workflow.id)}
+                >
+                    <Trash2 color="orange" />
+                </Button>
+                <Link href={`workflows/${workflow.id}`}>
+                    <CardHeader>
+                        <CardTitle>{workflow.name}</CardTitle>
+                        <CardDescription>{workflow.description}</CardDescription>
+                    </CardHeader>
+                </Link>
+                <CardContent className="flex justify-start space-x-4">
+                    <img src="/googleDrive.png" alt="Google Drive" className="w-8 h-8" />
+                    <img src="/notion.png" alt="Notion" className="w-8 h-8" />
+                    <img src="/discord.png" alt="Discord" className="w-8 h-8" />
+                </CardContent>
+                <div className="absolute bottom-5 right-5 flex items-center space-x-2">
+                    <Label htmlFor={`workflow-${workflow.id}`}>On</Label>
+                    <Switch
+                        // id={`workflow-${workflow.id}`}
+                        // checked={workflow.isEnabled}
+                        // onCheckedChange={() => handleToggle(workflow.id, workflow.isEnabled)}
+                    />
+                </div>
+            </Card>
+        ))
+    )}
+</div>
+
     );
 };
 

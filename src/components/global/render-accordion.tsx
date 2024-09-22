@@ -21,10 +21,12 @@ const RenderAccordion: React.FC<RenderAccordionProps> = ({ selectedNode, nodeCon
     const [isListening, setIsListening] = useState(false);
     const [inputText, setInputText] = useState('');
     const [loading, setLoading] = useState(false);
+    const [channelLoading, setchannelLoading] = useState(false);
     const [channels, setChannels] = useState<Option[]>([]);
     const [selectedChannel, setSelectedChannel] = useState<string>('');
 
     const fetchSlackChannels = async () => {
+        setchannelLoading(true);
         const res = await fetch('/api/slack-channels');
         const data = await res.json();
         if (res.ok) {
@@ -32,6 +34,7 @@ const RenderAccordion: React.FC<RenderAccordionProps> = ({ selectedNode, nodeCon
                 label: channel.label,
                 value: channel.id
             })));
+            setchannelLoading(false);
         } else {
             console.error('Error fetching channels:', data.error);
         }
@@ -57,18 +60,18 @@ const RenderAccordion: React.FC<RenderAccordionProps> = ({ selectedNode, nodeCon
     const onStoreSlackContent = useCallback(async () => {
         console.log('Node Connection:', nodeConnection);
         console.log('Selected Channel:', selectedChannel);
-    
+
         if (!nodeConnection?.slackNode || !selectedChannel) {
             toast.error('Missing Slack node or channel selection');
             return;
         }
-    
+
         const response = await postMessageToSlack(
             nodeConnection.slackNode.slackAccessToken,
             [{ label: selectedChannel, value: selectedChannel }],
             inputText
         );
-    
+
         if (response.message === 'Success') {
             toast.success('Message sent successfully');
             nodeConnection.setSlackNode((prev: any) => ({
@@ -80,9 +83,9 @@ const RenderAccordion: React.FC<RenderAccordionProps> = ({ selectedNode, nodeCon
             toast.error(response.message);
         }
     }, [nodeConnection, selectedChannel, inputText]);
-    
-    
-    
+
+
+
 
     const handleListener = useCallback(async () => {
         setLoading(true);
@@ -148,18 +151,29 @@ const RenderAccordion: React.FC<RenderAccordionProps> = ({ selectedNode, nodeCon
                                     {selectedChannel ? `Selected: ${selectedChannel}` : 'Select a Slack Channel'}
                                 </Button>
                             </DropdownMenuTrigger>
+
                             <DropdownMenuContent className="w-56 h-56">
-                                <DropdownMenuLabel>Select Channel</DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuRadioGroup value={selectedChannel} onValueChange={setSelectedChannel} className='h-56'>
-                                    {channels.map((channel) => (
-                                        <DropdownMenuRadioItem key={channel.value} value={channel.value} className='h-10'>
-                                            {channel.label}
-                                        </DropdownMenuRadioItem>
-                                    ))}
-                                </DropdownMenuRadioGroup>
+                                {channelLoading ? (
+                                    <div className="flex justify-center items-center h-full">
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    </div>
+                                ) : (
+                                    <>
+                                        <DropdownMenuLabel>Select Channel</DropdownMenuLabel>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuRadioGroup value={selectedChannel} onValueChange={setSelectedChannel} className='h-56'>
+                                            {channels.map((channel) => (
+                                                <DropdownMenuRadioItem key={channel.value} value={channel.value} className='h-10'>
+                                                    {channel.label}
+                                                </DropdownMenuRadioItem>
+                                            ))}
+                                        </DropdownMenuRadioGroup>
+                                    </>
+                                )}
                             </DropdownMenuContent>
                         </DropdownMenu>
+
+
 
 
 
