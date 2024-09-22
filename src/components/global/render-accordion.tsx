@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Card, CardContent } from '../ui/card';
 import { Button } from '../ui/button';
@@ -9,6 +9,8 @@ import { ConnectionProviderProps } from '@/providers/connection-provider';
 import { onCreateNewPageInDatabase } from '@/app/(main)/(pages)/dashboard/connections/_actions/notion-connection';
 import { postMessageToSlack } from '@/app/(main)/(pages)/dashboard/connections/_actions/slack-connection';
 import { postContentToWebHook } from '@/app/(main)/(pages)/dashboard/connections/_actions/discord-connection';
+import { Option } from '@/store';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuTrigger } from '../ui/dropdown-menu';
 
 interface RenderAccordionProps {
     selectedNode: any;
@@ -19,13 +21,28 @@ const RenderAccordion: React.FC<RenderAccordionProps> = ({ selectedNode, nodeCon
     const [isListening, setIsListening] = useState(false);
     const [inputText, setInputText] = useState('');
     const [loading, setLoading] = useState(false);
+    const [channels, setChannels] = useState<Option[]>([]);
+    const [selectedChannel, setSelectedChannel] = useState<string>('');
+
+    const fetchSlackChannels = async () => {
+        const res = await fetch('/api/slack-channels');
+        const data = await res.json();
+        if (res.ok) {
+            setChannels(data.channels.map((channel: any) => ({
+                label: channel.label,
+                value: channel.id
+            })));
+        } else {
+            console.error('Error fetching channels:', data.error);
+        }
+    };
 
     const onSendDiscordMessage = useCallback(async () => {
         const response = await postContentToWebHook(
             inputText,
             nodeConnection?.discordNode.webhookURL || 'https://discord.com/api/webhooks/1286008702264021109/mouelrLvazPe-tCVNaWJUc4YtvRfqtt3B9Gjd_cS6kWUYh0KJB5Ig-G2tpl0AKQCgEYT'
         );
-        
+
         if (response.message === 'success') {
             nodeConnection?.setDiscordNode((prev: any) => ({
                 ...prev,
@@ -38,48 +55,34 @@ const RenderAccordion: React.FC<RenderAccordionProps> = ({ selectedNode, nodeCon
     }, [inputText, nodeConnection?.discordNode]);
 
     const onStoreSlackContent = useCallback(async () => {
+        console.log('Node Connection:', nodeConnection);
+        console.log('Selected Channel:', selectedChannel);
+    
+        if (!nodeConnection?.slackNode || !selectedChannel) {
+            toast.error('Missing Slack node or channel selection');
+            return;
+        }
+    
         const response = await postMessageToSlack(
-            nodeConnection?.slackNode.slackAccessToken,
-            [{ label: 'taskflow', value: 'C07KHJ1KWA0' }], // Hardcoded channel ID for taskflow
-            'ganpati bappa morya!!' // Hardcoded content
+            nodeConnection.slackNode.slackAccessToken,
+            [{ label: selectedChannel, value: selectedChannel }],
+            inputText
         );
-
+    
         if (response.message === 'Success') {
             toast.success('Message sent successfully');
-            nodeConnection?.setSlackNode((prev: any) => ({
+            nodeConnection.setSlackNode((prev: any) => ({
                 ...prev,
                 content: '',
             }));
+            setSelectedChannel('');
         } else {
             toast.error(response.message);
         }
-    }, [nodeConnection?.slackNode]);
-
-    const onStoreNotionContent = useCallback(async () => {
-        if (!nodeConnection || !nodeConnection.notionNode) {
-            console.error('nodeConnection or nodeConnection.notionNode is undefined');
-            return;
-        }
-
-        try {
-            const response = await onCreateNewPageInDatabase(
-                nodeConnection.notionNode.databaseId,
-                nodeConnection.notionNode.accessToken,
-                nodeConnection.notionNode.content
-            );
-
-            if (response) {
-                nodeConnection.setNotionNode((prev: any) => ({
-                    ...prev,
-                    content: '',
-                }));
-                toast.success('New page created in database');
-            }
-        } catch (error) {
-            toast.error((error as Error).message);
-            console.error('Error creating new page in database:', error);
-        }
-    }, [nodeConnection?.notionNode]);
+    }, [nodeConnection, selectedChannel, inputText]);
+    
+    
+    
 
     const handleListener = useCallback(async () => {
         setLoading(true);
@@ -93,6 +96,10 @@ const RenderAccordion: React.FC<RenderAccordionProps> = ({ selectedNode, nodeCon
         } finally {
             setLoading(false);
         }
+    }, []);
+
+    useEffect(() => {
+        fetchSlackChannels();
     }, []);
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -122,15 +129,40 @@ const RenderAccordion: React.FC<RenderAccordionProps> = ({ selectedNode, nodeCon
                                         placeholder="Enter your message"
                                         className="border border-gray-300 p-2 w-full"
                                     />
-                                    <Button 
-                                        onClick={onSendDiscordMessage} 
-                                        variant='outline' 
+                                    <Button
+                                        onClick={onSendDiscordMessage}
+                                        variant='outline'
                                         className='w-full'>
                                         Test Message
                                     </Button>
                                 </div>
                             </CardContent>
                         </Card>
+
+
+
+                        {/* Slack channel selection */}
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="outline" className="w-full">
+                                    {selectedChannel ? `Selected: ${selectedChannel}` : 'Select a Slack Channel'}
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="w-56 h-56">
+                                <DropdownMenuLabel>Select Channel</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuRadioGroup value={selectedChannel} onValueChange={setSelectedChannel} className='h-56'>
+                                    {channels.map((channel) => (
+                                        <DropdownMenuRadioItem key={channel.value} value={channel.value} className='h-10'>
+                                            {channel.label}
+                                        </DropdownMenuRadioItem>
+                                    ))}
+                                </DropdownMenuRadioGroup>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+
+
+
                         <Card>
                             <CardContent className='p-4'>
                                 {loading ? (
@@ -139,9 +171,9 @@ const RenderAccordion: React.FC<RenderAccordionProps> = ({ selectedNode, nodeCon
                                         Please wait
                                     </Button>
                                 ) : (
-                                    <Button 
-                                        onClick={handleListener} 
-                                        variant={'outline'} 
+                                    <Button
+                                        onClick={handleListener}
+                                        variant={'outline'}
                                         className='w-full p-2'>
                                         {isListening ? 'Listening' : 'Create Listener'}
                                     </Button>

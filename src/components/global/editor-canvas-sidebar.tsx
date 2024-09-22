@@ -12,6 +12,7 @@ import { currentUser } from '@clerk/nextjs/server';
 import RenderAccordion from './render-accordion';
 import { toast } from 'sonner';
 import { useNodeConnections } from '@/providers/connection-provider';
+import { useFlowStore } from '@/store';
 
 interface CustomNodeData {
   icon?: string;
@@ -24,6 +25,7 @@ const EditorCanvasSidebar: React.FC = () => {
   const [workflowId, setWorkflowId] = useState<string>('');
   const [connections, setConnections] = useState<Record<string, boolean>>({});
   const [filteredConnections, setFilteredConnections] = useState<Record<string, boolean>>({});
+  const { slackChannels, selectedSlackChannels, setSelectedSlackChannels } = useFlowStore()
 
   const handleDragStart = (event: React.DragEvent, card: CustomNodeData) => {
     event.dataTransfer.setData('application/reactflow', JSON.stringify(card));
@@ -41,6 +43,12 @@ const EditorCanvasSidebar: React.FC = () => {
     }
   }, []);
 
+  const generateFlowPath = (nodes: Node[], edges: Edge[]) => {
+    // Simple approach: Just using the node IDs for the flowPath
+    return nodes.map(node => node.id);
+  };
+  
+
   const saveFlow = useCallback(async (workflowId: string, nodes: Node[], edges: Edge[]) => {
     const sanitizedNodes = nodes.map(node => ({
       id: node.id,
@@ -54,6 +62,8 @@ const EditorCanvasSidebar: React.FC = () => {
       type: edge.type,
     }));
 
+    const flowPath = generateFlowPath(nodes, edges);
+
     try {
       const response = await fetch('/api/save-workflow', {
         method: 'POST',
@@ -62,6 +72,7 @@ const EditorCanvasSidebar: React.FC = () => {
           workflowId,
           nodes: sanitizedNodes,
           edges: sanitizedEdges,
+          flowPath,
         }),
       });
 
@@ -194,7 +205,7 @@ const EditorCanvasSidebar: React.FC = () => {
             <RenderAccordion 
             selectedNode={selectedNode}
             nodeConnection={nodeConnection}
-            // setChannels={setSelectedSlackChannels}
+            setChannels={setSelectedSlackChannels}
             />
           </div>
         </TabsContent>
