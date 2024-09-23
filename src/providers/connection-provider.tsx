@@ -2,6 +2,7 @@
 import { createContext, useContext, useState } from 'react'
 
 export type ConnectionProviderProps = {
+  workflowId: any
   discordNode: {
     webhookURL: string
     content: string
@@ -18,6 +19,7 @@ export type ConnectionProviderProps = {
     content: ''
   }
   workflowTemplate: {
+    workflowid?: string
     discord?: string
     notion?: string
     slack?: string

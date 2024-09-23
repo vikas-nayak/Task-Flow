@@ -189,7 +189,7 @@ const EditorCanvasSidebar: React.FC = () => {
         <TabsContent value="settings">
           <Separator />
           <div className="p-2">
-            <p>{selectedNode ? selectedNode.data.name : 'No node selected'}</p>
+            <p className='text-2xl font-bold pl-2'>{selectedNode ? selectedNode.data.name : 'No node selected'}</p>
             {Object.keys(filteredConnections).length > 0 ? (
               CONNECTIONS.filter(connection =>
                 filteredConnections[connection.title]
@@ -200,7 +200,7 @@ const EditorCanvasSidebar: React.FC = () => {
                 />
               ))
             ) : (
-              <p>No connections available</p>
+              <p></p> //will be showing connection card here
             )}
             <RenderAccordion 
             selectedNode={selectedNode}

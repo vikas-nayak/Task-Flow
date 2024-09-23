@@ -6,11 +6,11 @@ import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Input } from '../ui/input';
 import { ConnectionProviderProps } from '@/providers/connection-provider';
-import { onCreateNewPageInDatabase } from '@/app/(main)/(pages)/dashboard/connections/_actions/notion-connection';
 import { postMessageToSlack } from '@/app/(main)/(pages)/dashboard/connections/_actions/slack-connection';
 import { postContentToWebHook } from '@/app/(main)/(pages)/dashboard/connections/_actions/discord-connection';
 import { Option } from '@/store';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuTrigger } from '../ui/dropdown-menu';
+
 
 interface RenderAccordionProps {
     selectedNode: any;
@@ -43,7 +43,7 @@ const RenderAccordion: React.FC<RenderAccordionProps> = ({ selectedNode, nodeCon
     const onSendDiscordMessage = useCallback(async () => {
         const response = await postContentToWebHook(
             inputText,
-            nodeConnection?.discordNode.webhookURL || 'https://discord.com/api/webhooks/1286008702264021109/mouelrLvazPe-tCVNaWJUc4YtvRfqtt3B9Gjd_cS6kWUYh0KJB5Ig-G2tpl0AKQCgEYT'
+            nodeConnection?.discordNode.webhookURL || 'https://discord.com/api/webhooks/1286008702264021109/mouelrLvazPe-tCVNaWJUc4YtvRfqtt3B9Gjd_cS6kWUYh0KJB5Ig-G2tpl0AKQCgEYT' //temporarily hardcode kiya hai hehe
         );
 
         if (response.message === 'success') {
@@ -51,11 +51,65 @@ const RenderAccordion: React.FC<RenderAccordionProps> = ({ selectedNode, nodeCon
                 ...prev,
                 content: '',
             }));
-            toast.success('Message sent successfully');
+            toast.success('Message sent to Discord successfully');
         } else {
             toast.error(response.message);
         }
     }, [inputText, nodeConnection?.discordNode]);
+
+
+
+
+    const onAddTemplateDiscord = useCallback(async () => {
+        if (!nodeConnection) {
+            toast.error('Node connection is missing.');
+            return;
+        }
+
+        const content = inputText;
+        let workflowId;
+
+        try {
+            const response = await fetch('/api/get-workflow-id');
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch workflow IDs');
+            }
+
+            const workflowIds = await response.json();
+
+            if (workflowIds.length > 0) {
+                workflowId = workflowIds[0];
+            } else {
+                workflowId = 'be41a851-b67c-4410-8a7f-fc00e7f06496'; // just in case XD
+            }
+        } catch (error) {
+            console.error('Error fetching workflow IDs:', error);
+            toast.error('Error fetching workflow IDs');
+            return;
+        }
+
+        const saveResponse = await fetch('/api/save-discord-template', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ workflowId, content }),
+        });
+
+        if (saveResponse.ok) {
+            const data = await saveResponse.json();
+            toast.success('Template saved');
+        } else {
+            const errorData = await saveResponse.json();
+            toast.error(`Error: ${errorData.message}`);
+        }
+    }, [inputText, nodeConnection]);
+
+
+
+
+
 
     const onStoreSlackContent = useCallback(async () => {
         console.log('Node Connection:', nodeConnection);
@@ -83,6 +137,104 @@ const RenderAccordion: React.FC<RenderAccordionProps> = ({ selectedNode, nodeCon
             toast.error(response.message);
         }
     }, [nodeConnection, selectedChannel, inputText]);
+
+
+
+
+
+
+    // NOT USEFUL FOR NOW AS IM USING MY SEND-NOTION API
+    // const onStoreNotionContent = useCallback(async () => {
+
+    //     if (!nodeConnection) {
+    //         console.error('nodeConnection is undefined');
+    //         return;
+    //     }
+    //     const response = await onCreateNewPageInDatabase(
+    //       nodeConnection.notionNode?.databaseId ?? '',
+    //       nodeConnection.notionNode?.accessToken ?? '',
+    //       nodeConnection.notionNode?.content ?? ''
+    //     );
+
+    //     if (response) {
+    //       nodeConnection.setNotionNode((prev: any) => ({
+    //         ...prev,
+    //         content: '',
+    //       }));
+    //     }
+    // }, [nodeConnection]);
+
+
+
+    const sendDataToNotion = async () => {
+        const response = await fetch('/api/send-notion', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                title: inputText,
+                content: 'something something',
+            }),
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            console.log('Data sent successfully:', data);
+            toast.success('Notion data sent successfully');
+        } else {
+            console.error('Error sending data:', data.error);
+            toast.error('Failed to send data to Notion');
+        }
+    };
+
+
+
+    const onAddTemplateNotion = useCallback(async () => {
+        if (!nodeConnection) {
+            toast.error('Node connection is missing.');
+            return;
+        }
+
+        const content = inputText;
+        let workflowId;
+
+        try {
+            const response = await fetch('/api/get-workflow-id');
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch workflow IDs');
+            }
+
+            const workflowIds = await response.json();
+
+            if (workflowIds.length > 0) {
+                workflowId = workflowIds[0];
+            } else {
+                workflowId = 'be41a851-b67c-4410-8a7f-fc00e7f06496'; // just in case XD
+            }
+        } catch (error) {
+            console.error('Error fetching workflow IDs:', error);
+            toast.error('Error fetching workflow IDs');
+            return;
+        }
+
+        const saveResponse = await fetch('/api/save-notion-template', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ workflowId, content }),
+        });
+
+        if (saveResponse.ok) {
+            const data = await saveResponse.json();
+            toast.success('Template saved');
+        } else {
+            const errorData = await saveResponse.json();
+            toast.error(`Error: ${errorData.message}`);
+        }
+    }, [inputText, nodeConnection]);
 
 
 
@@ -136,8 +288,27 @@ const RenderAccordion: React.FC<RenderAccordionProps> = ({ selectedNode, nodeCon
                                         onClick={onSendDiscordMessage}
                                         variant='outline'
                                         className='w-full'>
-                                        Test Message
+                                        Test Discord
                                     </Button>
+                                    <Button
+                                        onClick={sendDataToNotion}
+                                        variant='outline'
+                                        className='w-full'>
+                                        Test Notion
+                                    </Button>
+                                    <Button
+                                        onClick={onAddTemplateDiscord}
+                                        variant='default'
+                                        className='w-full'>
+                                        Save Discord Template
+                                    </Button>
+                                    <Button
+                                        onClick={onAddTemplateNotion}
+                                        variant='default'
+                                        className='w-full'>
+                                        Save Notion Template
+                                    </Button>
+
                                 </div>
                             </CardContent>
                         </Card>
