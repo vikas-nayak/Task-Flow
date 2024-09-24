@@ -4,7 +4,8 @@ import { currentUser } from '@clerk/nextjs/server';
 import { Client } from '@notionhq/client';
 
 export async function POST(req: Request) {
-  const { title, content } = await req.json();
+  const { title } = await req.json();
+
 
   const user = await currentUser();
   if (!user) {
@@ -18,31 +19,30 @@ export async function POST(req: Request) {
     },
   });
 
-  if (!connection) {
-    return NextResponse.json({ error: 'No Notion connection found' }, { status: 404 });
+  if (!connection || !connection.databaseId) {
+    return NextResponse.json({ error: 'No Notion connection or database ID found' }, { status: 404 });
   }
 
-  const { accessToken } = connection;
+  const { accessToken, databaseId } = connection;
 
-  // Create a Notion client with the user-specific access token
+
   const notion = new Client({ auth: accessToken });
 
   try {
     const response = await notion.pages.create({
-        parent: { database_id: '102538e3-46a9-80f9-bf05-e7a7316b6fa3' },
-        properties: {
-            name: {
-              title: [
-                {
-                  text: {
-                    content: title,
-                  },
-                },
-              ],
+      parent: { database_id: databaseId },
+      properties: {
+        name: {
+          title: [
+            {
+              text: {
+                content: title,
+              },
             },
-          },
-      });
-      
+          ],
+        },
+      },
+    });
 
     return NextResponse.json(response);
   } catch (error) {
