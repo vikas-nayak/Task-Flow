@@ -86,7 +86,7 @@ const RenderAccordion: React.FC<RenderAccordionProps> = ({ selectedNode, nodeCon
 
         if (saveResponse.ok) {
             const data = await saveResponse.json();
-            toast.success('Template saved');
+            toast.success('Discord Template saved');
         } else {
             const errorData = await saveResponse.json();
             toast.error(`Error: ${errorData.message}`);
@@ -160,6 +160,59 @@ const RenderAccordion: React.FC<RenderAccordionProps> = ({ selectedNode, nodeCon
         fetchSlackChannels();
     }, []);
 
+
+
+
+    const onAddTemplateSlack = useCallback(async () => {
+        if (!nodeConnection) {
+            toast.error('Node connection is missing.');
+            return;
+        }
+
+        const content = inputText;
+        let workflowId;
+
+        try {
+            const response = await fetch('/api/get-workflow-id');
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch workflow IDs');
+            }
+
+            const workflowIds = await response.json();
+
+            if (workflowIds.length > 0) {
+                workflowId = workflowIds[0];
+            } else {
+                workflowId = 'be41a851-b67c-4410-8a7f-fc00e7f06496'; // just in case XD
+            }
+        } catch (error) {
+            console.error('Error fetching workflow IDs:', error);
+            toast.error('Error fetching workflow IDs');
+            return;
+        }
+
+        const saveResponse = await fetch('/api/save-slack-template', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ workflowId, content }),
+        });
+
+        if (saveResponse.ok) {
+            const data = await saveResponse.json();
+            toast.success('Slack Template saved');
+        } else {
+            const errorData = await saveResponse.json();
+            toast.error(`Error: ${errorData.message}`);
+        }
+    }, [inputText, nodeConnection]);
+
+
+
+
+
     const sendDataToNotion = async () => {
         const response = await fetch('/api/send-notion', {
             method: 'POST',
@@ -221,12 +274,16 @@ const RenderAccordion: React.FC<RenderAccordionProps> = ({ selectedNode, nodeCon
 
         if (saveResponse.ok) {
             const data = await saveResponse.json();
-            toast.success('Template saved');
+            toast.success('Notion Template saved');
         } else {
             const errorData = await saveResponse.json();
             toast.error(`Error: ${errorData.message}`);
         }
     }, [inputText, nodeConnection]);
+
+
+
+
 
     const handleListener = useCallback(async () => {
         setLoading(true);
@@ -242,6 +299,10 @@ const RenderAccordion: React.FC<RenderAccordionProps> = ({ selectedNode, nodeCon
             setLoading(false);
         }
     }, []);
+
+
+
+
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setInputText(event.target.value);
@@ -300,6 +361,12 @@ const RenderAccordion: React.FC<RenderAccordionProps> = ({ selectedNode, nodeCon
                                             variant='default'
                                             className='w-full'>
                                             Save Notion Template
+                                        </Button>
+                                        <Button
+                                            onClick={onAddTemplateSlack}
+                                            variant='default'
+                                            className='w-full'>
+                                            Save Slack Template
                                         </Button>
                                     </div>
                                 </CardContent>

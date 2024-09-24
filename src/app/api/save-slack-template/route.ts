@@ -11,12 +11,12 @@ export async function POST(req) {
 
         const response = await db.workflows.update({
             where: { id: workflowId },
-            data: { notionTemplate: content },
+            data: { slackTemplate: content },
         });
 
-        return NextResponse.json({ message: 'Notion template saved successfully' }, { status: 200 });
+        return NextResponse.json({ message: 'Slack template saved successfully' }, { status: 200 });
     } catch (error) {
-        console.error('Error saving Notion template:', error);
+        console.error('Error saving Slack template:', error);
         return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
     }
 }
