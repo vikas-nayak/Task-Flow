@@ -1,4 +1,4 @@
-export type ConnectionTypes = 'Discord' | 'Notion' | 'Slack' | 'GoogleDrive' | 'ChatGPT';
+export type ConnectionTypes = 'Discord' | 'Notion' | 'Slack' | 'GoogleDrive' | 'ChatGPT' | 'LinkedIn' | 'Instagram' | 'WhatsApp';
 
 export type Connection = {
     title: ConnectionTypes

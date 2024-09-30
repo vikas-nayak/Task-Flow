@@ -35,4 +35,28 @@ export const CONNECTIONS: Connection[] = [
         accessTokenKey: 'slackAccessToken',
         slackSpecial: true,
     },
+    {
+        title: 'LinkedIn',
+        description:
+            'Use slack to send notifications to team members through your own custom bot.',
+        connectionKey: 'slackNode',
+        accessTokenKey: 'slackAccessToken',
+        slackSpecial: true,
+    },
+    {
+        title: 'Instagram',
+        description:
+            'Use slack to send notifications to team members through your own custom bot.',
+        connectionKey: 'slackNode',
+        accessTokenKey: 'slackAccessToken',
+        slackSpecial: true,
+    },
+    {
+        title: 'WhatsApp',
+        description:
+            'Use slack to send notifications to team members through your own custom bot.',
+        connectionKey: 'slackNode',
+        accessTokenKey: 'slackAccessToken',
+        slackSpecial: true,
+    },
 ]
