@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
               await onCreateNewPageInDatabase(
                 flow.notionDbId!,
                 flow.notionAccessToken!,
-                JSON.parse(flow.notionTemplate!)
+                JSON.stringify(flow.notionTemplate!)
               )
               flowPath.splice(flowPath[current], 1)
             }

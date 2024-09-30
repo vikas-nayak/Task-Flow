@@ -33,7 +33,7 @@ const RenderAccordion: React.FC<RenderAccordionProps> = ({ selectedNode, nodeCon
     const onSendDiscordMessage = useCallback(async () => {
         const response = await postContentToWebHook(
             inputText,
-            nodeConnection?.discordNode.webhookURL || 'https://discord.com/api/webhooks/1286008702264021109/mouelrLvazPe-tCVNaWJUc4YtvRfqtt3B9Gjd_cS6kWUYh0KJB5Ig-G2tpl0AKQCgEYT'
+            nodeConnection?.discordNode.webhookURL
         );
 
         if (response.message === 'success') {
@@ -112,8 +112,8 @@ const RenderAccordion: React.FC<RenderAccordionProps> = ({ selectedNode, nodeCon
         setChannelLoading(true);
         // Hardcoded channels for testing
         const hardcodedChannels = [
-            { id: 'C07KHJ0EH8C', label: 'General' },
-            { id: 'C07KHJ0EH8D', label: 'Random' },
+            { id: 'C07KHJ0EH8C', label: 'social' },
+            { id: 'C07KHJ0EH8D', label: 'testing' },
             // Add more channels as needed
         ];
         setChannels(hardcodedChannels.map(channel => ({

@@ -45,7 +45,7 @@ const EditorCanvasSidebar: React.FC = () => {
 
   const generateFlowPath = (nodes: Node[], edges: Edge[]) => {
     // Simple approach: Just using the node IDs for the flowPath
-    return nodes.map(node => node.id);
+    return nodes.map(node => node.data.name);
   };
   
 
