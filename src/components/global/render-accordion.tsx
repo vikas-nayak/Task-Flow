@@ -308,6 +308,11 @@ const RenderAccordion: React.FC<RenderAccordionProps> = ({ selectedNode, nodeCon
         setInputText(event.target.value);
     };
 
+    const isNotionNode = selectedNode?.data?.name === 'Notion';
+    const isDiscordNode = selectedNode?.data?.name === 'Discord';
+    const isSlackNode = selectedNode?.data?.name === 'Slack';
+    const isDriveNode = selectedNode?.data?.name === 'Google Drive';
+
     if (!nodeConnection) {
         return <div>Loading...</div>;
     }
@@ -315,7 +320,7 @@ const RenderAccordion: React.FC<RenderAccordionProps> = ({ selectedNode, nodeCon
     return (
         <div className='p-4'>
             <ScrollArea className='h-[400px]'>
-                <Accordion type="single" collapsible className='w-[240px]'>
+                <Accordion type="single" defaultValue='item' collapsible className='w-[240px]'>
                     <AccordionItem value="item-1">
                         <AccordionTrigger className='no-underline border-none text-lg'>
                             Actions
@@ -323,88 +328,101 @@ const RenderAccordion: React.FC<RenderAccordionProps> = ({ selectedNode, nodeCon
                         <AccordionContent>
                             <Card className='mb-4'>
                                 <CardContent className='p-4'>
-                                    <p className='font-semibold mb-2'>Message</p>
                                     <div className='space-y-4'>
-                                        <Input
-                                            type="text"
-                                            value={inputText}
-                                            onChange={handleInputChange}
-                                            placeholder="Enter your message"
-                                            className="border border-gray-300 p-2 w-full"
-                                        />
-                                        <Button
-                                            onClick={onSendDiscordMessage}
-                                            variant='outline'
-                                            className='w-full'>
-                                            Test Discord
-                                        </Button>
-                                        <Button
-                                            onClick={sendDataToNotion}
-                                            variant='outline'
-                                            className='w-full'>
-                                            Test Notion
-                                        </Button>
-                                        <Button
-                                            onClick={onStoreSlackContent}
-                                            variant='outline'
-                                            className='w-full'>
-                                            Test Slack
-                                        </Button>
-                                        <Button
-                                            onClick={onAddTemplateDiscord}
-                                            variant='default'
-                                            className='w-full'>
-                                            Save Discord Template
-                                        </Button>
-                                        <Button
-                                            onClick={onAddTemplateNotion}
-                                            variant='default'
-                                            className='w-full'>
-                                            Save Notion Template
-                                        </Button>
-                                        <Button
-                                            onClick={onAddTemplateSlack}
-                                            variant='default'
-                                            className='w-full'>
-                                            Save Slack Template
-                                        </Button>
+
+                                        {isDiscordNode && (
+                                            <>
+                                                <p className='font-semibold mb-2'>Message</p>
+                                                <Input
+                                                    type="text"
+                                                    value={inputText}
+                                                    onChange={handleInputChange}
+                                                    placeholder="Enter your message"
+                                                    className="border border-gray-300 p-2 w-full"
+                                                />
+                                                <Button onClick={onSendDiscordMessage} variant='outline' className='w-full'>
+                                                    Test Discord
+                                                </Button>
+                                                <Button onClick={onAddTemplateDiscord} variant='default' className='w-full'>
+                                                    Save Discord Template
+                                                </Button>
+                                            </>
+                                        )}
+
+                                        {/* Render Notion buttons */}
+                                        {isNotionNode && (
+                                            <>
+                                                <p className='font-semibold mb-2'>Message</p>
+                                                <Input
+                                                    type="text"
+                                                    value={inputText}
+                                                    onChange={handleInputChange}
+                                                    placeholder="Enter your message"
+                                                    className="border border-gray-300 p-2 w-full"
+                                                />
+                                                <Button onClick={sendDataToNotion} variant='outline' className='w-full'>
+                                                    Test Notion
+                                                </Button>
+                                                <Button onClick={onAddTemplateNotion} variant='default' className='w-full'>
+                                                    Save Notion Template
+                                                </Button>
+                                            </>
+                                        )}
+
+                                        {/* Render Slack buttons */}
+                                        {isSlackNode && (
+                                            <>
+                                                <p className='font-semibold mb-2'>Message</p>
+                                                <Input
+                                                    type="text"
+                                                    value={inputText}
+                                                    onChange={handleInputChange}
+                                                    placeholder="Enter your message"
+                                                    className="border border-gray-300 p-2 w-full"
+                                                />
+                                                <Button onClick={onStoreSlackContent} variant='outline' className='w-full'>
+                                                    Test Slack
+                                                </Button>
+                                                <Button onClick={onAddTemplateSlack} variant='default' className='w-full'>
+                                                    Save Slack Template
+                                                </Button>
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button variant="outline" className="w-full">
+                                                            {selectedChannel ? `Selected: ${selectedChannel}` : 'Select a Slack Channel'}
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent className="w-56 h-56">
+                                                        <DropdownMenuLabel>Select Channel</DropdownMenuLabel>
+                                                        <DropdownMenuSeparator />
+                                                        <DropdownMenuRadioGroup value={selectedChannel} onValueChange={setSelectedChannel} className='h-56'>
+                                                            {channels.map((channel) => (
+                                                                <DropdownMenuRadioItem key={channel.value} value={channel.value} className='h-10'>
+                                                                    {channel.label}
+                                                                </DropdownMenuRadioItem>
+                                                            ))}
+                                                        </DropdownMenuRadioGroup>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            </>
+                                        )}
+
+                                        {/* Render Drive buttons */}
+                                        {isDriveNode && (
+                                            <>
+                                                {loading ? (
+                                                    <Button disabled className='w-full'>
+                                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                        Please wait
+                                                    </Button>
+                                                ) : (
+                                                    <Button onClick={handleListener} variant={'outline'} className='w-full p-2'>
+                                                        {isListening ? 'Listening' : 'Create Listener'}
+                                                    </Button>
+                                                )}
+                                            </>
+                                        )}
                                     </div>
-                                </CardContent>
-                            </Card>
-
-                            {/* Slack channel selection */}
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" className="w-full">
-                                        {selectedChannel ? `Selected: ${selectedChannel}` : 'Select a Slack Channel'}
-                                    </Button>
-                                </DropdownMenuTrigger>
-
-                                <DropdownMenuContent className="w-56 h-56">
-                                    <DropdownMenuLabel>Select Channel</DropdownMenuLabel>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuRadioGroup value={selectedChannel} onValueChange={setSelectedChannel} className='h-56'>
-                                        {channels.map((channel) => (
-                                            <DropdownMenuRadioItem key={channel.value} value={channel.value} className='h-10'>
-                                                {channel.label}
-                                            </DropdownMenuRadioItem>
-                                        ))}
-                                    </DropdownMenuRadioGroup>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-
-                            <Card>
-                                <CardContent className='p-4'>
-                                    {loading ? (
-                                        <Button disabled className='w-full'>
-                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                            Please wait
-                                        </Button>
-                                    ) : (
-                                        <Button onClick={handleListener} variant={'outline'} className='w-full p-2'>
-                                            {isListening ? 'Listening' : 'Create Listener'}
-                                        </Button>
-                                    )}
                                 </CardContent>
                             </Card>
                         </AccordionContent>

@@ -47,7 +47,7 @@ const EditorCanvasSidebar: React.FC = () => {
     // Simple approach: Just using the node IDs for the flowPath
     return nodes.map(node => node.data.name);
   };
-  
+
 
   const saveFlow = useCallback(async (workflowId: string, nodes: Node[], edges: Edge[]) => {
     const sanitizedNodes = nodes.map(node => ({
@@ -189,7 +189,15 @@ const EditorCanvasSidebar: React.FC = () => {
         <TabsContent value="settings">
           <Separator />
           <div className="p-2">
-            <p className='text-2xl font-bold pl-2'>{selectedNode ? selectedNode.data.name : 'No node selected'}</p>
+            <p className='text-2xl font-bold pl-3'>
+              {selectedNode ? (
+                <>
+                  {selectedNode.data.name}
+                </>
+              ) : (
+                'No node selected'
+              )}
+            </p>
             {Object.keys(filteredConnections).length > 0 ? (
               CONNECTIONS.filter(connection =>
                 filteredConnections[connection.title]
@@ -200,12 +208,12 @@ const EditorCanvasSidebar: React.FC = () => {
                 />
               ))
             ) : (
-              <p></p> //will be showing connection card here
+              <p></p>
             )}
-            <RenderAccordion 
-            selectedNode={selectedNode}
-            nodeConnection={nodeConnection}
-            setChannels={setSelectedSlackChannels}
+            <RenderAccordion
+              selectedNode={selectedNode}
+              nodeConnection={nodeConnection}
+              setChannels={setSelectedSlackChannels}
             />
           </div>
         </TabsContent>
