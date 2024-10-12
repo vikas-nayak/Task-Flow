@@ -2,9 +2,13 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Preview
 
+Workflow page
 ![Workflows page](https://github.com/user-attachments/assets/d4f9f255-ecf6-4299-a079-d310f581bfb0)
+Create new workflow
 ![Create new workflow](https://github.com/user-attachments/assets/1646fe44-04e1-4176-a015-816339d5f5f8)
+Editor canvas
 ![Editor canvas](https://github.com/user-attachments/assets/56f1a6fa-ba62-4691-ba30-5f77cf198740)
+Connections page
 ![Connections page](https://github.com/user-attachments/assets/b2f618d4-a7b1-4bd7-adce-3ed19f894b12)
 
 ## Getting Started
