@@ -7,6 +7,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { FlowProvider } from "@/providers/flow-provider";
 import { Toaster } from "sonner";
 import NextTopLoader from 'nextjs-toploader';
+import ResponsiveWarning from "@/components/global/responsive-warning";
 
 
 const inter = DM_Sans({ subsets: ["latin"] });
@@ -25,6 +26,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body className={inter.className}>
+      <ResponsiveWarning/>
           <ThemeProvider
             attribute="class"
             defaultTheme="dark"
