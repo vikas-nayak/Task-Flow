@@ -43,16 +43,10 @@ const ConnectionCard = ({ connected }: Props) => {
                                                 : connection.title === 'Notion'
                                                     ? process.env.NEXT_PUBLIC_NOTION_AUTH_URL || '#'
                                                     : connection.title === 'Slack'
-                                                        ? process.env.NEXT_PUBLIC_SLACK_REDIRECT || '#'
-                                                        : connection.title === 'LinkedIn'
-                                                            ? process.env.NEXT_PUBLIC_LINKEDIN_REDIRECT || '#'
-                                                            : connection.title === 'Instagram'
-                                                                ? process.env.NEXT_PUBLIC_INSTAGRAM_REDIRECT || '#'
-                                                                : connection.title === 'WhatsApp'
-                                                                    ? process.env.NEXT_PUBLIC_WHATSAPP_REDIRECT || '#'
-                                                                    : connection.title === 'ChatGPT'
-                                                                        ? process.env.NEXT_PUBLIC_CHATGPT_REDIRECT || '#'
-                                                                        : '#'
+                                                        ? process.env.NEXT_PUBLIC_SLACK_AUTH_URL || '#'
+                                                        : connection.title === 'Gmail'
+                                                            ? process.env.NEXT_PUBLIC_GMAIL_REDIRECT || '#'
+                                                            : '#'
                                         }
                                         className="rounded-lg bg-primary p-2 font-bold text-primary-foreground"
                                     >

@@ -28,35 +28,10 @@ export const CONNECTIONS: Connection[] = [
         slackSpecial: true,
     },
     {
-        title: 'ChatGPT',
+        title: 'Gmail',
         description:
-            'Use slack to send notifications to team members through your own custom bot.',
-        connectionKey: 'slackNode',
-        accessTokenKey: 'slackAccessToken',
-        slackSpecial: true,
-    },
-    {
-        title: 'LinkedIn',
-        description:
-            'Use slack to send notifications to team members through your own custom bot.',
-        connectionKey: 'slackNode',
-        accessTokenKey: 'slackAccessToken',
-        slackSpecial: true,
-    },
-    {
-        title: 'Instagram',
-        description:
-            'Use slack to send notifications to team members through your own custom bot.',
-        connectionKey: 'slackNode',
-        accessTokenKey: 'slackAccessToken',
-        slackSpecial: true,
-    },
-    {
-        title: 'WhatsApp',
-        description:
-            'Use slack to send notifications to team members through your own custom bot.',
-        connectionKey: 'slackNode',
-        accessTokenKey: 'slackAccessToken',
-        slackSpecial: true,
+            'Global app for sending & reciving e-mails',
+        connectionKey: 'gmailNode',
+        accessTokenKey: 'accessToken',
     },
 ]

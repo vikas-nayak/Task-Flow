@@ -11,7 +11,7 @@ datasource db {
 }
 
 model User {
-  id  String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
 
   clerkId      String  @unique
   name         String?
@@ -19,18 +19,32 @@ model User {
   profileImage String?
   tier         String? @default("Free")
   credits      String? @default("10")
+googleResourceId String? @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-  localGoogleId    String?  @unique
-  googleResourceId String?  @unique
+  DiscordWebhook DiscordWebhook[]
+  Notion         Notion[]
+  Slack          Slack[]
+  Gmail          Gmail[]
+  connections    Connections[]
+  workflows      Workflows[]
+  GmailTemplate  GmailTemplate[]
+}
 
-  // LocalGoogleCredential LocalGoogleCredential?
-  DiscordWebhook        DiscordWebhook[]
-  Notion                Notion[]
-  Slack                 Slack[]
-  connections           Connections[]
-  workflows             Workflows[]
+model Gmail {
+  id            String        @id @default(uuid())
+  accessToken   String        @unique
+  refreshToken  String
+  email         String?
+  expiryDate    BigInt
+  
+  User          User          @relation(fields: [userId], references: [clerkId])
+  userId        String        @unique
+  connections   Connections[]
+  
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 }
 
 model LocalGoogleCredential {
@@ -45,8 +59,7 @@ model LocalGoogleCredential {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  userId Int  @unique
-  // user   User @relation(fields: [userId], references: [id])
+  userId Int @unique
 }
 
 model DiscordWebhook {
@@ -90,6 +103,17 @@ model Notion {
   connections   Connections[]
 }
 
+model GmailTemplate {
+  id        String   @id @default(cuid())
+  userId    String
+  to        String
+  subject   String
+  body      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [clerkId])
+}
+
 model Connections {
   id               String          @id @default(uuid())
   type             String          @unique
@@ -97,11 +121,14 @@ model Connections {
   discordWebhookId String?
   Notion           Notion?         @relation(fields: [notionId], references: [id])
   notionId         String?
+  Gmail            Gmail?          @relation(fields: [gmailId], references: [id])
+  gmailId          String?
   User             User?           @relation(fields: [userId], references: [clerkId])
   userId           String?
   Slack            Slack?          @relation(fields: [slackId], references: [id])
   slackId          String?
 }
+
 model Workflows {
   id                String   @id @default(uuid())
   nodes             Json?
@@ -110,6 +137,9 @@ model Workflows {
   discordTemplate   String?
   notionTemplate    String?
   slackTemplate     String?
+  gmailTo          String?
+  gmailSubject     String?
+  gmailBody        String?
   slackChannels     String[]
   slackAccessToken  String?
   notionAccessToken String?

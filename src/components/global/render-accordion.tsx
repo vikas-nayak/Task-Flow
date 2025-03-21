@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Card, CardContent } from '../ui/card';
 import { Button } from '../ui/button';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Mail } from 'lucide-react';
 import { toast } from 'sonner';
 import { Input } from '../ui/input';
 import { ConnectionProviderProps } from '@/providers/connection-provider';
@@ -11,6 +11,7 @@ import { postContentToWebHook } from '@/app/(main)/(pages)/dashboard/connections
 import { Option } from '@/store';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuTrigger } from '../ui/dropdown-menu';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Textarea } from '../ui/textarea';
 
 interface RenderAccordionProps {
     selectedNode: any;
@@ -24,6 +25,113 @@ const RenderAccordion: React.FC<RenderAccordionProps> = ({ selectedNode, nodeCon
     const [channelLoading, setChannelLoading] = useState(false);
     const [channels, setChannels] = useState<Option[]>([]);
     const [selectedChannel, setSelectedChannel] = useState<string>('');
+    const [isMailListening, setMailIsListening] = useState(false);
+
+    // New Gmail-specific state
+    const [emailSubject, setEmailSubject] = useState('subject');
+    const [emailBody, setEmailBody] = useState('body');
+    const [emailTo, setEmailTo] = useState('email');
+    const [isCheckingEmails, setIsCheckingEmails] = useState(false);
+
+
+
+
+    // Gmail Functions
+    const sendTestEmail = async () => {
+        if (!emailTo || !emailSubject || !emailBody) {
+            toast.error('Please fill in all email fields');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/send-gmail', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    to: emailTo,
+                    subject: emailSubject,
+                    body: emailBody,
+                }),
+            });
+
+            if (response.ok) {
+                toast.success('Test email sent successfully');
+
+            } else {
+                const error = await response.json();
+                toast.error(`Failed to send email: ${error.message}`);
+            }
+        } catch (error) {
+            console.error('Error sending email:', error);
+            toast.error('Failed to send test email');
+        }
+    };
+
+    const onAddTemplateGmail = useCallback(async () => {
+        if (!nodeConnection) {
+            toast.error('Node connection is missing.');
+            return;
+        }
+
+        const content = {
+            to: emailTo,
+            subject: emailSubject,
+            body: emailBody,
+        };
+
+        let workflowId;
+
+        try {
+            const response = await fetch('/api/get-workflow-id');
+            const workflowIds = await response.json();
+            workflowId = workflowIds[0] || 'be41a851-b67c-4410-8a7f-fc00e7f06496';
+        } catch (error) {
+            console.error('Error fetching workflow IDs:', error);
+            toast.error('Error fetching workflow IDs');
+            return;
+        }
+
+        try {
+            const saveResponse = await fetch('/api/save-gmail-template', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ workflowId, content }),
+            });
+
+            if (saveResponse.ok) {
+                toast.success('Gmail Template saved');
+            } else {
+                const errorData = await saveResponse.json();
+                toast.error(`Error: ${errorData.message}`);
+            }
+        } catch (error) {
+            console.error('Error saving Gmail template:', error);
+            toast.error('Failed to save Gmail template');
+        }
+    }, [emailTo, emailSubject, emailBody, nodeConnection]);
+
+    const handleEmailCheck = async () => {
+        setIsCheckingEmails(true);
+        try {
+            const response = await fetch('/api/check-gmail');
+            if (!response.ok) throw new Error('Failed to check emails');
+            toast.success('Gmail listener activated');
+        } catch (error) {
+            console.error('Error checking emails:', error);
+            toast.error('Failed to activate Gmail listener');
+        } finally {
+            setIsCheckingEmails(false);
+        }
+    };
+
+
+
+
+
 
     // Hardcoded Slack Node
     const hardcodedSlackNode = {
@@ -33,7 +141,7 @@ const RenderAccordion: React.FC<RenderAccordionProps> = ({ selectedNode, nodeCon
     const onSendDiscordMessage = useCallback(async () => {
         const response = await postContentToWebHook(
             inputText,
-            nodeConnection?.discordNode.webhookURL
+            nodeConnection?.discordNode.webhookURL || "https://discord.com/api/webhooks/1299226963470454844/Bm1_qiUqZxZuoeCjZmNYbSphKbNsj7Zlh69WG4ite8KBT1zFMNY9KBd0hDrF4MAiGVvD"
         );
 
         if (response.message === 'success') {
@@ -312,6 +420,8 @@ const RenderAccordion: React.FC<RenderAccordionProps> = ({ selectedNode, nodeCon
     const isDiscordNode = selectedNode?.data?.name === 'Discord';
     const isSlackNode = selectedNode?.data?.name === 'Slack';
     const isDriveNode = selectedNode?.data?.name === 'Google Drive';
+    const isGmailNode = selectedNode?.data?.name === 'Gmail';
+
 
     if (!nodeConnection) {
         return <div>Loading...</div>;
@@ -422,6 +532,68 @@ const RenderAccordion: React.FC<RenderAccordionProps> = ({ selectedNode, nodeCon
                                                 )}
                                             </>
                                         )}
+
+
+
+                                        {isGmailNode && (
+                                            <>
+                                                <p className="font-semibold mb-2">Email Details</p>
+                                                <Input
+                                                    type="email"
+                                                    value={emailTo}
+                                                    onChange={(e) => setEmailTo(e.target.value)}
+                                                    placeholder="Recipient Email"
+                                                    className="mb-2"
+                                                />
+                                                <Input
+                                                    type="text"
+                                                    value={emailSubject}
+                                                    onChange={(e) => setEmailSubject(e.target.value)}
+                                                    placeholder="Subject"
+                                                    className="mb-2"
+                                                />
+                                                <Textarea
+                                                    value={emailBody}
+                                                    onChange={(e) => setEmailBody(e.target.value)}
+                                                    placeholder="Email Body"
+                                                    className="mb-2"
+                                                    rows={4}
+                                                />
+                                                <Button
+                                                    onClick={sendTestEmail}
+                                                    variant="outline"
+                                                    className="w-full"
+                                                >
+                                                    <Mail className="mr-2 h-4 w-4" />
+                                                    Test Gmail
+                                                </Button>
+                                                <Button
+                                                    onClick={onAddTemplateGmail}
+                                                    variant="default"
+                                                    className="w-full"
+                                                >
+                                                    Save Gmail Template
+                                                </Button>
+                                                <Button
+                                                    onClick={handleEmailCheck}
+                                                    variant="outline"
+                                                    className="w-full"
+                                                    disabled={isCheckingEmails}
+                                                >
+                                                    {isCheckingEmails ? (
+                                                        <>
+                                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                            Checking Emails...
+                                                        </>
+                                                    ) : isMailListening ? (
+                                                        'Listening...'
+                                                    ) : (
+                                                        'Create Email Listener'
+                                                    )}
+                                                </Button>
+                                            </>
+                                        )}
+                                        
                                     </div>
                                 </CardContent>
                             </Card>

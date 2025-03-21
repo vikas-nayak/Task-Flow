@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, CardDescription, CardHeader } from '../ui/card';
-import { HardDrive, BotMessageSquare, Database, Slack, BrainCircuit, Instagram, Linkedin } from 'lucide-react';
+import { HardDrive, BotMessageSquare, Database, Slack, BrainCircuit, Instagram, Linkedin, Mail } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { v4 as uuidv4 } from 'uuid'; // Import uuid
 
@@ -9,9 +9,8 @@ const iconMapping = {
     BotMessageSquare: BotMessageSquare,
     Database: Database,
     Slack: Slack,
-    BrainCircuit: BrainCircuit,
-    Instagram: Instagram,
-    Linkedin: Linkedin,
+    Gmail: Mail,
+
 };
 
 interface CardData {
@@ -25,9 +24,8 @@ const cardDataArray: CardData[] = [
     { name: "Discord", description: "Securely store your files", icon: 'BotMessageSquare' },
     { name: "Notion", description: "Access your files anywhere", icon: 'Database' },
     { name: "Slack", description: "Collaborate efficiently", icon: 'Slack' },
-    { name: "Instagram", description: "Post content efficiently", icon: 'Instagram' },
-    { name: "Linkedin", description: "Post content efficiently", icon: 'Linkedin' },
-    { name: "ChatGPT", description: "AI-powered assistance", icon: 'BrainCircuit' }
+    { name: "Gmail", description: "Global app for sending & reciving e-mails", icon: 'Gmail' },
+
 ];
 
 interface DragCardProps {
